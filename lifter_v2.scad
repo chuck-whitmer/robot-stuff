@@ -35,8 +35,6 @@ module connector(tubeOd,tubeWall,thickness,length,plateThickness,gap,bearing,fla
                     cylinder(r=tubeOd/2+thickness, h=length);
                     
                 }
-                //translate([tubeOd+adj,-(thickness+gap/2),0])
-                //cube([plateSide,plateThickness,length]);
                 
                 translate([holeTranslation[0],holeTranslation[1],0])
                 rotate([90,0,0])
@@ -48,11 +46,6 @@ module connector(tubeOd,tubeWall,thickness,length,plateThickness,gap,bearing,fla
                     translate([0,holeTranslation[2]])
                     circle(bearing/2+flange);
                 }
-/*                
-                translate(holeTranslation)
-                rotate([90,0,0])
-                cylinder(r=bearing/2+flange,h=plateThickness);
-                */
             }
             translate(holeTranslation)
             rotate([90,0,0])
@@ -88,10 +81,8 @@ tube(tubeId,tubeOd,tubeLen);
 translate([-connectorPlateSide/2,0,0])
 connector(tubeOd,tubeWall,connectorThickness,connectorLength,connectorPlateThickness,connectorGap,bearingHole,flange,connectorAdj);
 
-/*
 rotate([0,0,180])
-translate([-connectorPlateSide/2,0,0])
-connector(tubeOd,tubeWall,connectorThickness,connectorLength,connectorPlateThickness,connectorPlateSide,connectorGap,connectorAdj);
-*/
+translate([-connectorPlateSide/2 - bearingHole - 2*flange,0,0])
+connector(tubeOd,tubeWall,connectorThickness,connectorLength,connectorPlateThickness,connectorGap,bearingHole,flange,connectorAdj);
 
 
