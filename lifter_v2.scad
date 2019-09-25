@@ -21,21 +21,17 @@ module tube(id, od, length)
     }
 }
 
-module connector(tubeOd,tubeWall,thickness,length,plateThickness,gap,bearing,flange,adj)
+module connector(tubeOd,sheathThickness,length,plateThickness,gap,bearing,disk,adj)
 {
+    // Two concepts: plateGap for gap between the disks. foldGap for the distance between tubes when folded.
+    holeTranslation = [tubeOd/2+sheathThickness+gap/2,-gap/2,length+gap/2+disk/2];
     rotate([0,90,0])
     {
-        holeTranslation = [tubeOd/2+tubeWall+gap/2,-gap/2,length+gap/2+bearing/2+flange];
         difference()
         {
             union()
             {
-                difference()
-                {
-                    cylinder(r=tubeOd/2+thickness, h=length);
-                    
-                }
-                
+                cylinder(r=tubeOd/2+sheathThickness, h=length);
                 translate([holeTranslation[0],holeTranslation[1],0])
                 rotate([90,0,0])
                 linear_extrude(plateThickness)
@@ -44,34 +40,31 @@ module connector(tubeOd,tubeWall,thickness,length,plateThickness,gap,bearing,fla
                     translate([-1.5*gap-tubeOd,length-1.4*gap])
                     square(gap);
                     translate([0,holeTranslation[2]])
-                    circle(bearing/2+flange);
+                    circle(disk/2);
                 }
             }
             translate(holeTranslation)
             rotate([90,0,0])
             translate([0,0,-0.1])
             cylinder(r=bearing/2,h=plateThickness+0.2);
-                    translate([0,0,-0.1])
-                    cylinder(r=tubeOd/2+adj, h=length+0.2);
+            translate([0,0,-0.1])
+            cylinder(r=tubeOd/2+adj, h=length+0.2);
         }
     }
 }
 
 connectorThickness = 0.1*in;
-connectorPlateThickness = 3;
+connectorPlateThickness = 4;
 connectorPlateSide = 2*in;
 connectorPlateOverlap = 0.2*in;
 connectorAdj = 0.2;
 connectorGap = 0.1*in;
 connectorLength = (connectorPlateSide - connectorGap)/2;
 bearingHole = 6;  // was 12
-flange = 11;  // was 8
+connectorDisk = 28;
 
-tubeWall = tubeOd - tubeId;
 
 /*
-translate([tubeLen/2-connectorLength,0,0])
-connector(tubeOd,connectorThickness,connectorLength,connectorPlateThickness,connectorPlateSide,connectorGap,connectorAdj);
 
 color("gray")
 tube(tubeId,tubeOd,tubeLen);
@@ -79,10 +72,10 @@ tube(tubeId,tubeOd,tubeLen);
 
 
 translate([-connectorPlateSide/2,0,0])
-connector(tubeOd,tubeWall,connectorThickness,connectorLength,connectorPlateThickness,connectorGap,bearingHole,flange,connectorAdj);
-/*
+connector(tubeOd,connectorThickness,connectorLength,connectorPlateThickness,connectorGap,bearingHole,connectorDisk,connectorAdj);
+
 rotate([0,0,180])
-translate([-connectorPlateSide/2 - bearingHole - 2*flange,0,0])
-connector(tubeOd,tubeWall,connectorThickness,connectorLength,connectorPlateThickness,connectorGap,bearingHole,flange,connectorAdj);
-*/
+translate([-connectorPlateSide/2 - connectorDisk,0,0])
+connector(tubeOd,connectorThickness,connectorLength,connectorPlateThickness,connectorGap,bearingHole,connectorDisk,connectorAdj);
+
 
