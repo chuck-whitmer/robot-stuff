@@ -41,7 +41,7 @@ module connector(tubeOd,tubeWall,thickness,length,plateThickness,gap,bearing,fla
                 linear_extrude(plateThickness)
                 hull()
                 {
-                    translate([-1.5*gap-tubeOd,0])
+                    translate([-1.5*gap-tubeOd,length-1.4*gap])
                     square(gap);
                     translate([0,holeTranslation[2]])
                     circle(bearing/2+flange);
@@ -80,9 +80,9 @@ tube(tubeId,tubeOd,tubeLen);
 
 translate([-connectorPlateSide/2,0,0])
 connector(tubeOd,tubeWall,connectorThickness,connectorLength,connectorPlateThickness,connectorGap,bearingHole,flange,connectorAdj);
-
+/*
 rotate([0,0,180])
 translate([-connectorPlateSide/2 - bearingHole - 2*flange,0,0])
 connector(tubeOd,tubeWall,connectorThickness,connectorLength,connectorPlateThickness,connectorGap,bearingHole,flange,connectorAdj);
-
+*/
 
