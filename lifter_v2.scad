@@ -145,25 +145,105 @@ module SimpleInnerSet()
 
 module SimpleOuterSet()
 {
-Double(tubeOffset/2)
-color("gray")
-tube(tubeId,tubeOd,tubeLength);
+    Double(tubeOffset/2)
+    color("gray")
+    tube(tubeId,tubeOd,tubeLength);
 
-CopyFourWays(tubeLength/2,-tubeOffset/2)
-connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
-    
-dy = plateMountDy(plateThickness,plateGap);
-    echo(dy);
-dh = HtdPulleyHeight(16,9);
-CopyFourWays(tubeLength/2+x1,0)    
-translate([0,tubeOffset/2+dy+dh/2,y1])
-rotate([90,0,0])
-HtdPulley(16,9);    
-    
+    CopyFourWays(tubeLength/2,-tubeOffset/2)
+    connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
+        
+    dy = plateMountDy(plateThickness,plateGap);
+        echo(dy);
+    dh = HtdPulleyHeight(16,9);
+    CopyFourWays(tubeLength/2+x1,0)    
+    translate([0,tubeOffset/2+dy+dh/2,y1])
+    rotate([90,0,0])
+    HtdPulley(16,9);    
 }
 
+module BottomOuterSet()
+{
+    Double(tubeOffset/2)
+    color("gray")
+    tube(tubeId,tubeOd,tubeLength2);
+
+    translate([tubeLength2/2,tubeOffset/2,0])
+    rotate([180,0,0])
+    connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
+    bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
+    
+    translate([tubeLength2/2,-tubeOffset/2,0])
+    mirror([0,1,0])
+    rotate([180,0,0])
+    connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
+    bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
+    
+    translate([-tubeLength2/2,-tubeOffset/2,0])
+    mirror([1,0,0])
+    connector(tubeOd,sheathWall,sheathLength,x2,y2,plateThickness,plateGap,
+      bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
+    translate([-tubeLength2/2,tubeOffset/2,0])
+    rotate([0,0,180])
+    connector(tubeOd,sheathWall,sheathLength,x2,y2,plateThickness,plateGap,
+      bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
+        
+    dy = plateMountDy(plateThickness,plateGap);
+    dh = HtdPulleyHeight(16,9);
+
+    translate([tubeLength2/2+x1,tubeOffset/2+dy+dh/2,-y1])
+    rotate([90,0,0])
+    HtdPulley(16,9);    
+    translate([tubeLength2/2+x1,-(tubeOffset/2+dy+dh/2),-y1])
+    rotate([90,0,0])
+    HtdPulley(16,9);    
+
+    translate([-tubeLength2/2-x2,0,y2])
+    rotate([90,0,0])
+    HtdPulley(32,15);    
+}
+
+module BottomOuterSetOld()
+{
+    Double(tubeOffset/2)
+    color("gray")
+    tube(tubeId,tubeOd,tubeLength2);
+
+    translate([tubeLength2/2,tubeOffset/2,0])
+    rotate([180,0,0])
+    connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
+    bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
+    
+    translate([tubeLength2/2,-tubeOffset/2,0])
+    mirror([0,1,0])
+    rotate([180,0,0])
+    connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
+    bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
+    
+    translate([-tubeLength2/2,-tubeOffset/2,0])
+    mirror([1,0,0])
+    connector(tubeOd,sheathWall,sheathLength,x2,y2,plateThickness,plateGap,
+      bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
+    translate([-tubeLength2/2,tubeOffset/2,0])
+    rotate([0,0,180])
+    connector(tubeOd,sheathWall,sheathLength,x2,y2,plateThickness,plateGap,
+      bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
+        
+    dy = plateMountDy(plateThickness,plateGap);
+    dh = HtdPulleyHeight(16,9);
+
+    translate([tubeLength2/2+x1,tubeOffset/2+dy+dh/2,-y1])
+    rotate([90,0,0])
+    HtdPulley(16,9);    
+    translate([tubeLength2/2+x1,-(tubeOffset/2+dy+dh/2),-y1])
+    rotate([90,0,0])
+    HtdPulley(16,9);    
 
 
+
+    translate([-tubeLength2/2-x2,0,y2])
+    rotate([90,0,0])
+    HtdPulley(32,15);    
+}
 
 
 carbonTube1 = [0.314*in,0.393*in,"McMaster"];
@@ -195,35 +275,61 @@ x1 = (sqrt(R1*R1-4*y1*y1)-tubeLength)/2;
 plateDy = plateMountDy(plateThickness,plateGap);
 tubeOffset = 2*plateDy + HtdPulleyHeight(16,15);
 
+// Bottom and top connectors.
+R2 = 9.4365*in; // HTD 120, 16 to 32 tooth
+pitchDiameter2 = 2.0051*in;
+tubeLength2 = 7.5*in;
+
+
+//y2 = y1 * pitchDiameter2/pitchDiameter1;
+y2 = 0;
+
+totalX2 = sqrt(R2*R2-y2*y2);
+x2 = totalX2 - tubeLength2 - x1;
+
+
+
 justOneConnector = 0;
 theWholeStack = 1;
 onePulley = 2;
+bottomLink = 3;
 
+//display = bottomLink;
 display = theWholeStack;
 
 if (display == justOneConnector)
 {
-connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
+    connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
+      bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
 }
 else if (display == onePulley)
 {
     HtdPulley(16,15);
     echo($fn);
 }
+else if (display == bottomLink)
+{
+    BottomOuterSet();
+}
 else
 {
     //theta = 180*$t;
-    theta = 20;
+    theta = 0;
     firstAngle = 20;
     
     d1 = HtdPulleyPitchDiameter(16,9);
+    d2 = HtdPulleyPitchDiameter(32,9);
 
     rotate([0,-theta/2-firstAngle,0])
-    translate([tubeLength+2*x1,0,-2*y1])
+    translate([tubeLength2+x1+x2,0,-(y1+y2)])
     {
-        translate([-tubeLength/2-x1,0,y1])
-        rotate([0,0,180])
-        SimpleOuterSet();
+        translate([-tubeLength2/2-x1,0,y1])
+        {
+        //rotate([0,0,180])
+        BottomOuterSet();
+        rotate([90,0,0])
+        HtdBelt(d2,-x2-tubeLength2/2,y2,d1,x1+tubeLength2/2,-y1,15);
+        }
         rotate([0,theta+firstAngle,0])
         translate([-tubeLength-2*x1,0,-2*y1])
         {
