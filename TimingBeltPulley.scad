@@ -13,6 +13,9 @@ function HtdPulleyHeight(nTeeth,beltWidth)
 function HtdPulleyDiameter(nTeeth,beltWidth)
     = nTeeth*5/pi - 2*Htd5PitchLineOffset + 2*flangeHeight;
 
+function HtdPulleyPitchDiameter(nTeeth,beltWidth)
+    = nTeeth*5/pi;
+
 module HtdPulley(nTeeth,beltWidth)
 {
     // This is specific to the HTD 5mm belt.
@@ -43,6 +46,7 @@ module HtdPulley(nTeeth,beltWidth)
     h = 2*flangeHeight+beltWidth+widthAdjust;
     w = outerDiameter+2*flangeHeight;
     
+    translate([0,0,-h/2])
     intersection()
     {
         difference()
@@ -109,3 +113,6 @@ module HtdPulley(nTeeth,beltWidth)
         cylinder(r1=2*w,r2=0,h=2*w);
     }
 }
+
+$fn=100;
+HtdPulley(16,9);
