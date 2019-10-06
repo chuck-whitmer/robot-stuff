@@ -20,6 +20,21 @@ module tube(id, od, length)
     }
 }
 
+module axle(diameter,length)
+{
+    r = diameter/2;
+    s = 1.1*diameter;
+    color("silver")
+    rotate([0,-90,0])
+    translate([0,0,-length/2])
+    intersection()
+    {
+        translate([-s/2,-0.4*s,-0.5])
+        cube([s,s,length+1]);
+        cylinder(r=r,h=length);
+    }
+    
+}
 
 
 module CopyFourWays(dx,dy)
@@ -183,12 +198,42 @@ module BottomOuterSet()
     
     translate([-tubeLength2/2,-tubeOffset/2,0])
     mirror([1,0,0])
-    connector(tubeOd,sheathWall,sheathLength,x2,y2,plateThickness,plateGap,
-      bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
+    difference()
+    { 
+        connector(tubeOd,sheathWall,sheathLength,x2,y2,plateThickness,plateGap,
+          bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
+        translate([x2,0,0])
+        rotate([90,0,0])
+        {
+            translate([0,0,-10])
+            for (i=[0:3])
+            {
+                rotate([0,0,45+90*i])
+                translate([8,0,0])
+                cylinder(r=2,h=20);
+            }
+        }        
+    }
+    
+    
     translate([-tubeLength2/2,tubeOffset/2,0])
-    rotate([0,0,180])
-    connector(tubeOd,sheathWall,sheathLength,x2,y2,plateThickness,plateGap,
-      bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
+    rotate([0,0,180])    
+    difference()
+    { 
+        connector(tubeOd,sheathWall,sheathLength,x2,y2,plateThickness,plateGap,
+          bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
+        translate([x2,0,0])
+        rotate([90,0,0])
+        {
+            translate([0,0,-10])
+            for (i=[0:3])
+            {
+                rotate([0,0,45+90*i])
+                translate([8,0,0])
+                cylinder(r=2,h=20);
+            }
+        }        
+    }
         
     dy = plateMountDy(plateThickness,plateGap);
     dh = HtdPulleyHeight(16,9);
@@ -200,9 +245,49 @@ module BottomOuterSet()
     rotate([90,0,0])
     HtdPulley(16,9);    
 
-    translate([-tubeLength2/2-x2,0,y2])
+    translate([tubeLength2/2+x1,0,-y1])
+    rotate([0,0,-90])
+    axle(6,75);
+
+    translate([-tubeLength2/2-x2,0,0])
+    rotate([0,0,-90])
+    axle(6,75);
+
+    translate([-tubeLength2/2-x2,tubeOffset/2+dy+6.1,0])
     rotate([90,0,0])
-    HtdPulley(32,15);    
+    Nub();
+    translate([-tubeLength2/2-x2,-(tubeOffset/2+dy+6.1),0])
+    rotate([-90,0,0])
+    Nub();
+}
+
+module Nub()
+{
+    s = 0.625*in;
+    color("grey")
+    intersection()
+    {
+    difference()
+    {
+        translate([-s/2,-s/2,0])
+        cube([s,s,6]);
+        translate([0,0,-10])
+        {
+            cylinder(r=3,h=20);
+            for (i=[0:3])
+            {
+                rotate([0,0,45+90*i])
+                translate([8,0,0])
+                cylinder(r=2,h=20);
+            }
+        }
+    }
+    s1 = 1.16*s;
+    rotate([0,0,45])
+    translate([-s1/2,-s1/2,-5])
+    cube([s1,s1,20]);
+    
+}
 }
 
 module TopInnerSet()
@@ -237,12 +322,120 @@ module TopInnerSet()
     rotate([90,0,0])
     HtdPulley(16,15);    
 
-    translate([-tubeLength2/2-x2,tubeOffset/2+dy+dh/2,y2])
+    translate([-tubeLength2/2-x2,0,0])
     rotate([90,0,0])
-    HtdPulley(32,9);    
-    translate([-tubeLength2/2-x2,-(tubeOffset/2+dy+dh/2),y2])
+    HtdPulley(16,15);    
+}
+
+module ToolConnector(shift,plateThickness,rotation)
+{
+    pd32 = HtdPulleyDiameter(32,9);
+    pd16 = HtdPulleyDiameter(16,9);
+    middleR = (pd32+pd16)/4 -1.5;
+    
     rotate([90,0,0])
-    HtdPulley(32,9);    
+    difference()
+    {  
+        translate([0,0,-plateThickness/2])
+        linear_extrude(plateThickness)
+        hull()
+        {
+            circle(r=pd32/2);
+            translate([-shift,0])
+            circle(r=14);
+        }
+        translate([-shift,0,0])
+        holes(8);
+        translate([0,0,-5])
+        {
+            cylinder(r=bearingOD/2+bearingAdj,h=10);
+            rotate([0,0,rotation])
+            {
+                translate([-middleR,0,0])
+                cylinder(r=2.1,h=10);
+                translate([0,middleR,0])
+                cylinder(r=2.1,h=10);
+                translate([0,-middleR,0])
+                cylinder(r=2.1,h=10);
+            }
+        }
+    }
+}
+
+
+module ToolMount()
+{
+    dy = plateMountDy(plateThickness,plateGap);
+    dh = HtdPulleyHeight(16,9);
+    pulleyFaceY = tubeOffset/2+dy;
+
+    translate([-96-39,0,-32])
+    {
+        translate([32,0,-32])
+        rotate([0,-90,0])
+        TetrixChannel(96);
+        translate([64,0,32])    
+        TetrixChannel(96);
+    }
+    
+    pd32 = HtdPulleyDiameter(32,9);
+    pd16 = HtdPulleyDiameter(16,9);
+    middleR = (pd32+pd16)/4-1.5;
+    rotation = -45;
+    
+    difference()
+    {
+        union()
+        {
+            translate([0,tubeOffset/2+dy+dh/2,0])
+            rotate([90,0,0])
+            HtdPulley(32,9);    
+            translate([0,-(tubeOffset/2+dy+dh/2),0])
+            rotate([90,0,0])
+            HtdPulley(32,9);   
+        }
+            rotate([90,0,0])
+        translate([0,0,-50])
+        {
+            cylinder(r=bearingOD/2+bearingAdj,h=10);
+            rotate([0,0,rotation])
+            {
+                translate([-middleR,0,0])
+                cylinder(r=2.1,h=100);
+                translate([0,middleR,0])
+                cylinder(r=2.1,h=100);
+                translate([0,-middleR,0])
+                cylinder(r=2.1,h=100);
+            }
+        }
+    }
+    plateThickness = pulleyFaceY-16;
+    translate([0,16+plateThickness/2,0])
+    ToolConnector(39,plateThickness,rotation);
+    translate([0,-16-plateThickness/2,0])
+    ToolConnector(39,plateThickness,rotation);
+}
+
+module RobotMount()
+{
+    dh = HtdPulleyHeight(32,15);
+    plateThickness = 14-dh/2;
+
+    rotation = -11;
+    
+    translate([0,dh/2+plateThickness/2,0])
+    rotate([0,-90,0])
+    ToolConnector(39,plateThickness,rotation);
+    translate([0,-dh/2-plateThickness/2,0])
+    rotate([0,-90,0])
+    ToolConnector(39,plateThickness,rotation);
+    
+    translate([0,0,-39])
+    rotate([180,0,0])
+    TetrixChannel(96);
+
+    rotate([90,0,0])
+    HtdPulley(32,15);    
 }
 
 
@@ -316,14 +509,23 @@ else if (display == tetrixTest)
 }
 else
 {
-    //theta = 180*$t;
-    theta = 20;
+//    theta = ($t < 0.45) ? $t/0.45*170
+//        : ($t < 0.50) ? 170
+//        : ($t < 0.95) ? (0.95-$t)/0.45*170
+//        : 0;
+    
+// >> Set theta here! <<
+// Good values are 0 to 170.
+//
+    
+    theta = 30;
     firstAngle = 30;  // 25 for bottom 5 for top.
     lastAngle = 5;
     
     d1 = HtdPulleyPitchDiameter(16,9);
     d2 = HtdPulleyPitchDiameter(32,9);
 
+    RobotMount();
     rotate([0,-theta/2-firstAngle,0])
     translate([tubeLength2+x1+x2,0,-(y1+y2)])
     {
@@ -366,8 +568,8 @@ else
                     }
                     
                     rotate([0,-theta/2-lastAngle,0])
-                    rotate([0,-90,0])
-                    TetrixChannel(96);
+                    ToolMount();
+                    
                 }
             }
         }
