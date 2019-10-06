@@ -2,6 +2,7 @@ in = 25.4;
 $fn = 50;
 
 use <TimingBeltPulley.scad>
+use <tetrix_holes.scad>
 
 
 function TubeWeight(id, od, length, density)
@@ -18,6 +19,8 @@ module tube(id, od, length)
         cylinder(r=id/2,h=length+0.2);
     }
 }
+
+
 
 module CopyFourWays(dx,dy)
 {
@@ -202,48 +205,46 @@ module BottomOuterSet()
     HtdPulley(32,15);    
 }
 
-module BottomOuterSetOld()
+module TopInnerSet()
 {
     Double(tubeOffset/2)
     color("gray")
     tube(tubeId,tubeOd,tubeLength2);
 
     translate([tubeLength2/2,tubeOffset/2,0])
-    rotate([180,0,0])
     connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
     bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
     
     translate([tubeLength2/2,-tubeOffset/2,0])
     mirror([0,1,0])
-    rotate([180,0,0])
     connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
     bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
     
     translate([-tubeLength2/2,-tubeOffset/2,0])
     mirror([1,0,0])
+    rotate([180,0,0])
     connector(tubeOd,sheathWall,sheathLength,x2,y2,plateThickness,plateGap,
       bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
     translate([-tubeLength2/2,tubeOffset/2,0])
-    rotate([0,0,180])
+    rotate([180,0,180])
     connector(tubeOd,sheathWall,sheathLength,x2,y2,plateThickness,plateGap,
       bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
         
     dy = plateMountDy(plateThickness,plateGap);
     dh = HtdPulleyHeight(16,9);
 
-    translate([tubeLength2/2+x1,tubeOffset/2+dy+dh/2,-y1])
+    translate([tubeLength2/2+x1,0,y1])
     rotate([90,0,0])
-    HtdPulley(16,9);    
-    translate([tubeLength2/2+x1,-(tubeOffset/2+dy+dh/2),-y1])
+    HtdPulley(16,15);    
+
+    translate([-tubeLength2/2-x2,tubeOffset/2+dy+dh/2,y2])
     rotate([90,0,0])
-    HtdPulley(16,9);    
-
-
-
-    translate([-tubeLength2/2-x2,0,y2])
+    HtdPulley(32,9);    
+    translate([-tubeLength2/2-x2,-(tubeOffset/2+dy+dh/2),y2])
     rotate([90,0,0])
-    HtdPulley(32,15);    
+    HtdPulley(32,9);    
 }
+
 
 
 carbonTube1 = [0.314*in,0.393*in,"McMaster"];
@@ -280,12 +281,8 @@ R2 = 9.4365*in; // HTD 120, 16 to 32 tooth
 pitchDiameter2 = 2.0051*in;
 tubeLength2 = 7.5*in;
 
-
-//y2 = y1 * pitchDiameter2/pitchDiameter1;
 y2 = 0;
-
-totalX2 = sqrt(R2*R2-y2*y2);
-x2 = totalX2 - tubeLength2 - x1;
+x2 = R2 - tubeLength2 - x1;
 
 
 
@@ -293,9 +290,11 @@ justOneConnector = 0;
 theWholeStack = 1;
 onePulley = 2;
 bottomLink = 3;
+tetrixTest = 4;
 
 //display = bottomLink;
 display = theWholeStack;
+//display = tetrixTest;
 
 if (display == justOneConnector)
 {
@@ -311,11 +310,16 @@ else if (display == bottomLink)
 {
     BottomOuterSet();
 }
+else if (display == tetrixTest)
+{
+    TetrixChannel(96);
+}
 else
 {
     //theta = 180*$t;
-    theta = 0;
-    firstAngle = 20;
+    theta = 20;
+    firstAngle = 30;  // 25 for bottom 5 for top.
+    lastAngle = 5;
     
     d1 = HtdPulleyPitchDiameter(16,9);
     d2 = HtdPulleyPitchDiameter(32,9);
@@ -325,10 +329,9 @@ else
     {
         translate([-tubeLength2/2-x1,0,y1])
         {
-        //rotate([0,0,180])
-        BottomOuterSet();
-        rotate([90,0,0])
-        HtdBelt(d2,-x2-tubeLength2/2,y2,d1,x1+tubeLength2/2,-y1,15);
+            BottomOuterSet();
+            rotate([90,0,0])
+            HtdBelt(d2,-x2-tubeLength2/2,y2,d1,x1+tubeLength2/2,-y1,15);
         }
         rotate([0,theta+firstAngle,0])
         translate([-tubeLength-2*x1,0,-2*y1])
@@ -351,9 +354,21 @@ else
                     rotate([90,0,0])
                     HtdBelt(d1,-x1-tubeLength/2,-y1,d1,x1+tubeLength/2,y1,15);
                 }
-                rotate([0,theta,0])
-                translate([-tubeLength/2-x1,0,-y1])
-                SimpleInnerSet();
+                rotate([0,theta+lastAngle,0])
+                translate([-tubeLength2-x1-x2,0,-y1])
+                {
+                    translate([tubeLength2/2+x2,0,0])
+                    {
+                    TopInnerSet();
+                    Double(tubeOffset/2+9/2+plateMountDy(plateThickness,plateGap)+2.75)
+                    rotate([90,0,0])
+                    HtdBelt(d2,-x2-tubeLength2/2,0,d1,x1+tubeLength2/2,y1,9);
+                    }
+                    
+                    rotate([0,-theta/2-lastAngle,0])
+                    rotate([0,-90,0])
+                    TetrixChannel(96);
+                }
             }
         }
     }

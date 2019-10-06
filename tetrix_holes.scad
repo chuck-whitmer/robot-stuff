@@ -20,6 +20,76 @@ module holes(nholes)
     }
 }
 
+module ChannelHolePattern(length)
+{
+    n = ceil(length/64);
+    if (length==32 || length==96 || length==160 || length==288|| length==416)
+    {
+        for (i=[0:n-2])
+        {
+            translate([64*i,0,0])
+            holePattern();
+        }
+        translate([(n-1)*64+16,0,0])
+        holes(8);
+    }
+    else
+    {
+        for (i=[0:n-1])
+        {
+            translate([64*i,0,0])
+            holePattern();
+        }
+    }
+}
+
+module holePattern()
+{
+    translate([16,0,0])
+    {
+        holes(8);
+        translate([16,0,0])
+        {
+            holes(0);
+            translate([16,0,0])
+            {
+                holes(4);
+                translate([16,0,0])
+                holes(0);
+            }
+        }
+    }
+}
+
+module TetrixChannel(length)
+{
+    color("silver")
+    difference()
+    {
+        union()
+        {
+            rotate([-90,0,0])
+            translate([-length/2,-16,-16])
+            {
+                translate([0,0,30])
+                cube([length,32,2]);
+                translate([0,2,0])
+                rotate([90,0,0])
+                cube([length,32,2]);
+                cube([length,32,2]);
+            }
+        }
+        translate([-length/2,0,16])
+        ChannelHolePattern(length);
+        translate([-length/2,16,0])
+        rotate([90,0,0])
+        ChannelHolePattern(length);
+        translate([-length/2,-16,0])
+        rotate([90,0,0])
+        ChannelHolePattern(length);
+    }
+}
+
 module slots(nholes, angle)
 {
     smallR = 4.2/2; // Nominal 3.7 mm.  4.2 works on TAZ.
