@@ -33,9 +33,7 @@ module axle(diameter,length)
         cube([s,s,length+1]);
         cylinder(r=r,h=length);
     }
-    
 }
-
 
 module CopyFourWays(dx,dy)
 {
@@ -85,8 +83,6 @@ module HtdBelt(d1,x1,y1,d2,x2,y2,width)
         circle(r=d2/2-1);
     }
 }
-
-
 
 function plateMountDy(plateThickness,plateGap)
     = plateGap/2 + plateThickness;
@@ -155,10 +151,10 @@ module SimpleInnerSet()
     pulleyHeight = HtdPulleyHeight(16,15);
     translate([-x1-tubeLength/2,0,-y1])
     rotate([90,0,0])
-    HtdPulley(16,15);    
+    HtdPulley(16,15,0);    
     translate([x1+tubeLength/2,0,y1])
     rotate([90,0,0])
-    HtdPulley(16,15);      
+    HtdPulley(16,15,0);      
 }
 
 module SimpleOuterSet()
@@ -477,8 +473,6 @@ tubeLength2 = 7.5*in;
 y2 = 0;
 x2 = R2 - tubeLength2 - x1;
 
-
-
 justOneConnector = 0;
 theWholeStack = 1;
 onePulley = 2;
@@ -518,15 +512,15 @@ else
 // Good values are 0 to 170.
 //
     
-    theta = 30;
-    firstAngle = 30;  // 25 for bottom 5 for top.
+    theta = 0;
+    firstAngle = 30;  // 30 for bottom 5 for top.
     lastAngle = 5;
     
     d1 = HtdPulleyPitchDiameter(16,9);
     d2 = HtdPulleyPitchDiameter(32,9);
 
     RobotMount();
-    rotate([0,-theta/2-firstAngle,0])
+    rotate([0,-theta/2-firstAngle,0]) 
     translate([tubeLength2+x1+x2,0,-(y1+y2)])
     {
         translate([-tubeLength2/2-x1,0,y1])
@@ -540,10 +534,10 @@ else
         {
             translate([tubeLength/2+x1,0,y1])
             {
-            SimpleInnerSet();
-            Double(tubeOffset/2+9/2+plateMountDy(plateThickness,plateGap)+2.75)
-            rotate([90,0,0])
-            HtdBelt(d1,-x1-tubeLength/2,-y1,d1,x1+tubeLength/2,y1,9);
+                SimpleInnerSet();
+                Double(tubeOffset/2+9/2+plateMountDy(plateThickness,plateGap)+2.75)
+                rotate([90,0,0])
+                HtdBelt(d1,-x1-tubeLength/2,-y1,d1,x1+tubeLength/2,y1,9);
             }
             
             rotate([0,-theta,0])
@@ -567,7 +561,7 @@ else
                     HtdBelt(d2,-x2-tubeLength2/2,0,d1,x1+tubeLength2/2,y1,9);
                     }
                     
-                    rotate([0,-theta/2-lastAngle,0])
+                    rotate([0,-theta/2-lastAngle,0]) 
                     ToolMount();
                     
                 }

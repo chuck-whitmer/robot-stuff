@@ -16,7 +16,7 @@ function HtdPulleyDiameter(nTeeth,beltWidth)
 function HtdPulleyPitchDiameter(nTeeth,beltWidth)
     = nTeeth*5/pi;
 
-module HtdPulley(nTeeth,beltWidth)
+module HtdPulley(nTeeth,beltWidth,pipRotation)
 {
     // This is specific to the HTD 5mm belt.
     bigR = Htd5BigR;
@@ -44,7 +44,7 @@ module HtdPulley(nTeeth,beltWidth)
     sinPhi = sqrt(1.0 - cosPhi*cosPhi);
     theta = asin(sinPhi/C*B);
     h = 2*flangeHeight+beltWidth+widthAdjust;
-    w = outerDiameter+2*flangeHeight;
+    w = outerDiameter+2*flangeHeight;  // Same as HtdPulleyDiameter.
     
     translate([0,0,-h/2])
     intersection()
@@ -90,20 +90,23 @@ module HtdPulley(nTeeth,beltWidth)
             }
             translate([0,0,-0.1])
             cylinder(r=boreRadius,h=h+0.2);
+
+            // Cut out the alignment pips.
+            rPipLocation = (w+12)/4;
+            rPip = 2;
+            translate([-rPipLocation,0,h+rPip/2])
+            sphere(r=rPip);
+            translate([0,-rPipLocation,h+rPip/2])
+            sphere(r=rPip);
+            translate([0,rPipLocation,h+rPip/2])
+            sphere(r=rPip);
+            translate([-rPipLocation,0,-rPip/2])
+            sphere(r=rPip);
+            translate([0,-rPipLocation,-rPip/2])
+            sphere(r=rPip);
+            translate([0,rPipLocation,-rPip/2])
+            sphere(r=rPip);
             
-            // Alignment cutouts.
-            translate([0,A-2,0])
-            translate([-1,-2,-1])
-            cube([2,4,2]);
-            translate([0,-(A-2),0])
-            translate([-1,-2,-1])
-            cube([2,4,2]);
-            translate([0,A-2,h])
-            translate([-1,-2,-1])
-            cube([2,4,2]);
-            translate([0,-(A-2),h])
-            translate([-1,-2,-1])
-            cube([2,4,2]);
         }
         translate([0,0,-0.1])
         cylinder(r=w/2-1.0,h=h+0.2);
