@@ -94,18 +94,27 @@ module HtdPulley(nTeeth,beltWidth,pipRotation)
             // Cut out the alignment pips.
             rPipLocation = (w+12)/4;
             rPip = 2;
-            translate([-rPipLocation,0,h+rPip/2])
-            sphere(r=rPip);
-            translate([0,-rPipLocation,h+rPip/2])
-            sphere(r=rPip);
-            translate([0,rPipLocation,h+rPip/2])
-            sphere(r=rPip);
-            translate([-rPipLocation,0,-rPip/2])
-            sphere(r=rPip);
-            translate([0,-rPipLocation,-rPip/2])
-            sphere(r=rPip);
-            translate([0,rPipLocation,-rPip/2])
-            sphere(r=rPip);
+            rotate([0,0,pipRotation])
+            {
+                translate([-rPipLocation,0,h+rPip/2])
+                sphere(r=rPip);
+                translate([0,-rPipLocation,h+rPip/2])
+                sphere(r=rPip);
+                translate([0,rPipLocation,h+rPip/2])
+                sphere(r=rPip);
+                translate([-rPipLocation,0,-rPip/2])
+                sphere(r=rPip);
+                translate([0,-rPipLocation,-rPip/2])
+                sphere(r=rPip);
+                translate([0,rPipLocation,-rPip/2])
+                sphere(r=rPip);
+            }
+            translate([0,rPipLocation,h])
+            translate(-[1,3*rPip,2]/2)
+            cube([1,3*rPip,2]);
+            translate([0,rPipLocation,0])
+            translate(-[1,3*rPip,2]/2)
+            cube([1,3*rPip,2]);
             
         }
         translate([0,0,-0.1])
@@ -118,4 +127,4 @@ module HtdPulley(nTeeth,beltWidth,pipRotation)
 }
 
 $fn=100;
-HtdPulley(16,9);
+HtdPulley(16,9,45);
