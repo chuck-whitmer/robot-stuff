@@ -565,15 +565,15 @@ else if (display == onePulley)
     teeth = 16;
     width = 9;
     h = HtdPulleyHeight(teeth,width);
-    
+    bearingDiameterAdjust = 0.4; // First print at 12 gave a hole of 11.6mm
     difference()
     {
         translate([0,0,h/2])
         HtdPulley(teeth,width,0,$fn=50);
         translate([0,0,-1])
-        bearing(6,12,5);
+        bearing(6,12+bearingDiameterAdjust,5);
         translate([0,0,h-4])
-        bearing(6,12,5);
+        bearing(6,12+bearingDiameterAdjust,5);
         cylinder(r=5.75,h=h);
     }
 }
