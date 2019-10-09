@@ -88,7 +88,7 @@ function plateMountDy(plateThickness,plateGap)
     = plateGap/2 + plateThickness;
 
 module connector(tubeOD,sheathWall,sheathLength,plateCenterX,plateCenterY,
-    plateThickness,plateGap,bearingOD,pitchDiameter,flange,tubeAdj,bearingAdj)
+    plateThickness,plateGap,bearingOD,pitchDiameter,flange,tubeAdj,bearingAdj,pipRotation,pipOffset)
 {
     // The connector consists of a sheath and a roundish plate.
     // The connector is oriented along the X axis, and drops below.
@@ -135,7 +135,17 @@ module connector(tubeOD,sheathWall,sheathLength,plateCenterX,plateCenterY,
         translate([0,0,-0.1])
         cylinder(r=tubeOD/2+tubeAdj,sheathLength+0.2);
     }
-    
+    rPip = 2;
+    translate([plateCenterX,rPip/2-(plateThickness+plateGap/2),plateCenterY])
+    rotate([0,pipRotation,0])
+    {
+        translate([0,0,pipOffset])
+        sphere(r=rPip);
+        translate([0,0,-pipOffset])
+        sphere(r=rPip);
+        translate([-pipOffset,0,0])
+        sphere(r=rPip);
+    }
 }
 
 module SimpleInnerSet()
@@ -146,7 +156,7 @@ module SimpleInnerSet()
 
     CopyFourWays(tubeLength/2,tubeOffset/2)
     connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,bearingOD,
-        pitchDiameter1,flange,tubeAdj,bearingAdj);
+        pitchDiameter1,flange,tubeAdj,bearingAdj,0,0);
 
     pulleyHeight = HtdPulleyHeight(16,15);
     translate([-x1-tubeLength/2,0,-y1])
@@ -164,7 +174,7 @@ module SimpleOuterSet()
     tube(tubeId,tubeOd,tubeLength);
 
     CopyFourWays(tubeLength/2,-tubeOffset/2)
-    connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
+    connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj,0,0);
         
     dy = plateMountDy(plateThickness,plateGap);
         echo(dy);
@@ -172,7 +182,7 @@ module SimpleOuterSet()
     CopyFourWays(tubeLength/2+x1,0)    
     translate([0,tubeOffset/2+dy+dh/2,y1])
     rotate([90,0,0])
-    HtdPulley(16,9);    
+    HtdPulley(16,9,0);    
 }
 
 module BottomOuterSet()
@@ -184,20 +194,20 @@ module BottomOuterSet()
     translate([tubeLength2/2,tubeOffset/2,0])
     rotate([180,0,0])
     connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
-    bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
+    bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj,0,0);
     
     translate([tubeLength2/2,-tubeOffset/2,0])
     mirror([0,1,0])
     rotate([180,0,0])
     connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
-    bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
+    bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj,0,0);
     
     translate([-tubeLength2/2,-tubeOffset/2,0])
     mirror([1,0,0])
     difference()
     { 
         connector(tubeOd,sheathWall,sheathLength,x2,y2,plateThickness,plateGap,
-          bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
+          bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj,0,0);
         translate([x2,0,0])
         rotate([90,0,0])
         {
@@ -217,7 +227,7 @@ module BottomOuterSet()
     difference()
     { 
         connector(tubeOd,sheathWall,sheathLength,x2,y2,plateThickness,plateGap,
-          bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
+          bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj,0,0);
         translate([x2,0,0])
         rotate([90,0,0])
         {
@@ -236,10 +246,10 @@ module BottomOuterSet()
 
     translate([tubeLength2/2+x1,tubeOffset/2+dy+dh/2,-y1])
     rotate([90,0,0])
-    HtdPulley(16,9);    
+    HtdPulley(16,9,0);    
     translate([tubeLength2/2+x1,-(tubeOffset/2+dy+dh/2),-y1])
     rotate([90,0,0])
-    HtdPulley(16,9);    
+    HtdPulley(16,9,0);    
 
     translate([tubeLength2/2+x1,0,-y1])
     rotate([0,0,-90])
@@ -294,33 +304,33 @@ module TopInnerSet()
 
     translate([tubeLength2/2,tubeOffset/2,0])
     connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
-    bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
+    bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj,0,0);
     
     translate([tubeLength2/2,-tubeOffset/2,0])
     mirror([0,1,0])
     connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
-    bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
+    bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj,0,0);
     
     translate([-tubeLength2/2,-tubeOffset/2,0])
     mirror([1,0,0])
     rotate([180,0,0])
     connector(tubeOd,sheathWall,sheathLength,x2,y2,plateThickness,plateGap,
-      bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
+      bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj,0,0);
     translate([-tubeLength2/2,tubeOffset/2,0])
     rotate([180,0,180])
     connector(tubeOd,sheathWall,sheathLength,x2,y2,plateThickness,plateGap,
-      bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
+      bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj,0,0);
         
     dy = plateMountDy(plateThickness,plateGap);
     dh = HtdPulleyHeight(16,9);
 
     translate([tubeLength2/2+x1,0,y1])
     rotate([90,0,0])
-    HtdPulley(16,15);    
+    HtdPulley(16,15,0);    
 
     translate([-tubeLength2/2-x2,0,0])
     rotate([90,0,0])
-    HtdPulley(16,15);    
+    HtdPulley(16,15,0);    
 }
 
 module ToolConnector(shift,plateThickness,rotation)
@@ -385,10 +395,10 @@ module ToolMount()
         {
             translate([0,tubeOffset/2+dy+dh/2,0])
             rotate([90,0,0])
-            HtdPulley(32,9);    
+            HtdPulley(32,9,0);    
             translate([0,-(tubeOffset/2+dy+dh/2),0])
             rotate([90,0,0])
-            HtdPulley(32,9);   
+            HtdPulley(32,9,0);   
         }
             rotate([90,0,0])
         translate([0,0,-50])
@@ -431,10 +441,28 @@ module RobotMount()
     TetrixChannel(96);
 
     rotate([90,0,0])
-    HtdPulley(32,15);    
+    HtdPulley(32,15,0);    
 }
 
-
+module bearing(bearingID,bearingOD,bearingH)
+{
+    bearingLittleR = 0.5;
+    difference()
+    { 
+        rotate_extrude()
+        {
+            square([bearingOD/2-bearingLittleR,bearingH]);
+            translate([0,bearingLittleR])
+            square([bearingOD/2,bearingH-2*bearingLittleR]);
+            translate([bearingOD/2-bearingLittleR,bearingLittleR])
+            circle(r=bearingLittleR);
+            translate([bearingOD/2-bearingLittleR,bearingH-bearingLittleR])
+            circle(r=bearingLittleR);
+        }
+        translate([0,0,-0.1])
+        cylinder(r=bearingID/2,h=bearingH+0.2);
+    }
+}
 
 carbonTube1 = [0.314*in,0.393*in,"McMaster"];
 // 0.054 lb/in^3
@@ -473,36 +501,6 @@ tubeLength2 = 7.5*in;
 y2 = 0;
 x2 = R2 - tubeLength2 - x1;
 
-justOneConnector = 0;
-theWholeStack = 1;
-onePulley = 2;
-bottomLink = 3;
-tetrixTest = 4;
-
-//display = bottomLink;
-display = theWholeStack;
-//display = tetrixTest;
-
-if (display == justOneConnector)
-{
-    connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
-      bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj);
-}
-else if (display == onePulley)
-{
-    HtdPulley(16,15);
-    echo($fn);
-}
-else if (display == bottomLink)
-{
-    BottomOuterSet();
-}
-else if (display == tetrixTest)
-{
-    TetrixChannel(96);
-}
-else
-{
 //    theta = ($t < 0.45) ? $t/0.45*170
 //        : ($t < 0.50) ? 170
 //        : ($t < 0.95) ? (0.95-$t)/0.45*170
@@ -518,6 +516,77 @@ else
     
     d1 = HtdPulleyPitchDiameter(16,9);
     d2 = HtdPulleyPitchDiameter(32,9);
+
+justOneConnector = 0;
+theWholeStack = 1;
+onePulley = 2;
+bottomLink = 3;
+tetrixTest = 4;
+
+//display = bottomLink;
+//display = theWholeStack;
+//display = tetrixTest;
+//display = onePulley;
+display = justOneConnector;
+
+if (display == justOneConnector)
+{
+//Pulley Alignment
+//It is essential that if we want the starting linkages to have the angles we
+//specify, then the pulleys need to be aligned to allow it. One tooth over on 
+//a 16 tooth pulley is 22.5 degrees!
+//For the two linkages in the middle that are horizontal, we make sure all pulleys
+//start orientated straight up. There is an alignment mark on each pulley that
+//aligns with a belt valley.
+//For any other set of pulleys that will share a belt, the alignment marks must 
+//each point to the other pulley's center. Then the teeth are guaranteed to mesh.
+//There are 3 pips on connectors, and by convention we will have these be located
+//top, bottom, and left.
+//So the corresponding pip holes on the pulleys must be rotated so that they have
+//the correct starting position.
+    
+// The connectors on the robot mount will be called 0a and 0b. 0a is on the left of
+// the robot.
+// The connectors on the first linkage are 1La, 1Lb, 1Ua, 1Ub. Lower and Upper.
+
+// The bottom linkage is an Outer set. 9mm with pulleys. The 1Ua and 1Ub must start aligned
+// upward to mesh with 3La and 3Lb, but linkage 1 is angled, and the pips on the connector
+// must be adjusted.    
+    
+    
+    // 1Ua
+    w = HtdPulleyDiameter(16,9);
+    mirror([0,0,1])
+    connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
+      7,pitchDiameter1,flange,tubeAdj,bearingAdj,-firstAngle,(w+12)/4);
+}
+else if (display == onePulley)
+{
+    teeth = 16;
+    width = 9;
+    h = HtdPulleyHeight(teeth,width);
+    
+    difference()
+    {
+        translate([0,0,h/2])
+        HtdPulley(teeth,width,0,$fn=50);
+        translate([0,0,-1])
+        bearing(6,12,5);
+        translate([0,0,h-4])
+        bearing(6,12,5);
+        cylinder(r=5.75,h=h);
+    }
+}
+else if (display == bottomLink)
+{
+    BottomOuterSet();
+}
+else if (display == tetrixTest)
+{
+    TetrixChannel(96);
+}
+else
+{
 
     RobotMount();
     rotate([0,-theta/2-firstAngle,0]) 
