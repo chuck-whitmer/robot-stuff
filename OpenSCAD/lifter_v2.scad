@@ -526,8 +526,8 @@ tetrixTest = 4;
 //display = bottomLink;
 //display = theWholeStack;
 //display = tetrixTest;
-//display = onePulley;
-display = justOneConnector;
+display = onePulley;
+//display = justOneConnector;
 
 if (display == justOneConnector)
 {
@@ -570,9 +570,9 @@ else if (display == onePulley)
     {
         translate([0,0,h/2])
         HtdPulley(teeth,width,0,$fn=50);
-        translate([0,0,-1])
+        translate([0,0,-0.5])
         bearing(6,12+bearingDiameterAdjust,5);
-        translate([0,0,h-4])
+        translate([0,0,h-4.5])
         bearing(6,12+bearingDiameterAdjust,5);
         cylinder(r=5.75,h=h);
     }

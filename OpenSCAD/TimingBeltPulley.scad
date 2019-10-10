@@ -93,21 +93,22 @@ module HtdPulley(nTeeth,beltWidth,pipRotation)
 
             // Cut out the alignment pips.
             rPipLocation = (w+12)/4;
+            adj = 0.2;
             rPip = 2;
             rotate([0,0,pipRotation])
             {
                 translate([-rPipLocation,0,h+rPip/2])
-                sphere(r=rPip);
+                sphere(r=rPip+adj);
                 translate([0,-rPipLocation,h+rPip/2])
-                sphere(r=rPip);
+                sphere(r=rPip+adj);
                 translate([0,rPipLocation,h+rPip/2])
-                sphere(r=rPip);
+                sphere(r=rPip+adj);
                 translate([-rPipLocation,0,-rPip/2])
-                sphere(r=rPip);
+                sphere(r=rPip+adj);
                 translate([0,-rPipLocation,-rPip/2])
-                sphere(r=rPip);
+                sphere(r=rPip+adj);
                 translate([0,rPipLocation,-rPip/2])
-                sphere(r=rPip);
+                sphere(r=rPip+adj);
             }
             translate([0,rPipLocation,h])
             translate(-[1,3*rPip,2]/2)
