@@ -108,32 +108,37 @@ module connector(tubeOD,sheathWall,sheathLength,plateCenterX,plateCenterY,
             linear_extrude(plateThickness)
             difference()
             {
-            union()
-            {
-                a = plateGap/2 + plateThickness;
-                r = tubeOD/2 + sheathWall;
-                b = sqrt(r*r-a*a);
-                hull()
+                union()
                 {
-                    // The basic circle.
-                    translate([plateCenterX,plateCenterY])
-                    circle(r=pitchDiameter/2+flange);
-                    // Attachment to the sheath.
-                    translate([0,-b])
-                    square([2,2*b]);
+                    a = plateGap/2 + plateThickness;
+                    r = tubeOD/2 + sheathWall;
+                    b = sqrt(r*r-a*a);
+                    hull()
+                    {
+                        // The basic circle.
+                        translate([plateCenterX,plateCenterY])
+                        circle(r=pitchDiameter/2+flange);
+                        // Attachment to the sheath.
+                        translate([0,-b])
+                        square([2,2*b]);
+                    }
+                    // Push the attachment into the sheath.
+                    translate([-2,-b])
+                    square([4,2*b]);
                 }
-                // Push the attachment into the sheath.
-                translate([-2,-b])
-                square([4,2*b]);
-            }
-            // Drill the bearing hole.
-            translate([plateCenterX,plateCenterY])
-            circle(r=bearingOD/2+bearingAdj);
+                // Drill the bearing hole.
+                translate([plateCenterX,plateCenterY])
+                circle(r=bearingOD/2+bearingAdj);
             }
         }
         rotate([0,-90,0])
         translate([0,0,-0.1])
         cylinder(r=tubeOD/2+tubeAdj,sheathLength+0.2);
+
+        translate([-sheathLength+tubeOD/2+1,0,0])
+        rotate([0,-90,0])
+        cylinder(r1=0,r2=sheathLength,h=sheathLength);
+        
     }
     rPip = 2;
     translate([plateCenterX,rPip/2-(plateThickness+plateGap/2),plateCenterY])
@@ -336,34 +341,37 @@ module TopInnerSet()
 module ToolConnector(shift,plateThickness,rotation)
 {
     pd32 = HtdPulleyDiameter(32,9);
-    pd16 = HtdPulleyDiameter(16,9);
-    middleR = (pd32+pd16)/4 -1.5;
+    pipOffset = (pd32+12)/4;
     
     rotate([90,0,0])
-    difference()
-    {  
-        translate([0,0,-plateThickness/2])
-        linear_extrude(plateThickness)
-        hull()
-        {
-            circle(r=pd32/2);
-            translate([-shift,0])
-            circle(r=14);
-        }
-        translate([-shift,0,0])
-        holes(8);
-        translate([0,0,-5])
-        {
-            cylinder(r=bearingOD/2+bearingAdj,h=10);
-            rotate([0,0,rotation])
+    {
+        difference()
+        {  
+            translate([0,0,-plateThickness/2])
+            linear_extrude(plateThickness)
+            hull()
             {
-                translate([-middleR,0,0])
-                cylinder(r=2.1,h=10);
-                translate([0,middleR,0])
-                cylinder(r=2.1,h=10);
-                translate([0,-middleR,0])
-                cylinder(r=2.1,h=10);
+                circle(r=pd32/2);
+                translate([-shift,0])
+                circle(r=14);
             }
+            translate([-shift,0,0])
+            holes(4);
+            translate([0,0,-5])
+            {
+                cylinder(r=bearingOD/2+bearingAdj,h=10);
+            }
+        }
+        rPip = 2;
+        translate([0,0,plateThickness/2-rPip/2])
+        rotate([0,0,rotation])
+        {
+            translate([0,pipOffset,0])
+            sphere(r=rPip);
+            translate([-pipOffset,0,0])
+            sphere(r=rPip);
+            translate([0,-pipOffset,0])
+            sphere(r=rPip);
         }
     }
 }
@@ -474,6 +482,13 @@ tubeId = myTube[0];
 tubeOd = myTube[1];
 tubeLength = 6.75*in;
 
+PRUSA = 1;
+TAZ = 2;
+
+//-----------------//
+printer = TAZ;
+//-----------------//
+
 sheathWall = 2.5;
 sheathLength = 1.0*in;
 stackGap = 1.0;
@@ -482,7 +497,7 @@ plateGap = 0.1*in;
 plateThickness = 4; // Matches the bearing.
 bearingOD = 6;
 bearingAdj = 0.1; // 0 too tight. 0.2 a tiny bit loose. (Rough settings.)
-tubeAdj = 0.1;
+tubeAdj = (printer==PRUSA) ? 0.1 : (printer==TAZ) ? 0.10 : 0.0; // 0.13 for TAZ/slic3r
 
 // R1 = 13.190*in;  // 5mm HTD 150, 16 to 16 tooth
 R1 = 8.2687*in;  // 5mm HTD 100, 16 to 16 tooth
@@ -526,8 +541,8 @@ tetrixTest = 4;
 //display = bottomLink;
 //display = theWholeStack;
 //display = tetrixTest;
-display = onePulley;
-//display = justOneConnector;
+//display = onePulley;
+display = justOneConnector;
 
 if (display == justOneConnector)
 {
@@ -552,13 +567,37 @@ if (display == justOneConnector)
 // The bottom linkage is an Outer set. 9mm with pulleys. The 1Ua and 1Ub must start aligned
 // upward to mesh with 3La and 3Lb, but linkage 1 is angled, and the pips on the connector
 // must be adjusted.    
-    
-    
-    // 1Ua
-    w = HtdPulleyDiameter(16,9);
-    mirror([0,0,1])
-    connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
-      7,pitchDiameter1,flange,tubeAdj,bearingAdj,-firstAngle,(w+12)/4);
+
+c1Ua = 1;    
+c0a = 2;
+c0b = 3;
+
+thisConnector = c0a;
+
+dh3215 = HtdPulleyHeight(32,15);
+
+    if (thisConnector == c1Ua)
+    {
+        w = HtdPulleyDiameter(16,9);
+        rotate([0,-90,0])
+        mirror([0,0,1])
+        connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
+          7,pitchDiameter1,flange,tubeAdj,bearingAdj,-firstAngle,(w+12)/4);
+    }
+    else if (thisConnector == c0a)
+    {
+        plateThickness = 14-dh3215/2;
+        rotate([-90,0,0])
+        ToolConnector(39,plateThickness,90);
+    }
+    else if (thisConnector == c0b)
+    {
+        plateThickness = 14-dh3215/2;
+        rotate([-90,0,0])
+        ToolConnector(39,plateThickness,-90);
+    }
+
+
 }
 else if (display == onePulley)
 {
