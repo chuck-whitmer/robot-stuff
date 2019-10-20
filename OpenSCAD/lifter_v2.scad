@@ -342,7 +342,7 @@ module ToolConnector(shift,plateThickness,rotation)
 {
     pd32 = HtdPulleyDiameter(32,9);
     pipOffset = (pd32+12)/4;
-    
+    echo(bearingOD);
     rotate([90,0,0])
     {
         difference()
@@ -359,7 +359,7 @@ module ToolConnector(shift,plateThickness,rotation)
             holes(4);
             translate([0,0,-5])
             {
-                cylinder(r=bearingOD/2+bearingAdj,h=10);
+                cylinder(r=4,h=10);
             }
         }
         rPip = 2;
