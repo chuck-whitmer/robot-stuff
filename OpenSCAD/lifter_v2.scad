@@ -550,8 +550,8 @@ tubeSpacer = 5;
 //display = bottomLink;
 //display = theWholeStack;
 //display = tetrixTest;
-display = onePulley;
-//display = justOneConnector;
+//display = onePulley;
+display = justOneConnector;
 //display = tubeSpacer;
 
 if (display == justOneConnector)
@@ -582,8 +582,12 @@ c1Ua = 1;
 c0a = 2;
 c0b = 3;
 c1La = 4;
+c2La = 5;
+c4Lb = 6;
+c4La = 7;
+c2Lb = 8;
 
-thisConnector = c1Ua;
+thisConnector = c2Lb;
 
 dh3215 = HtdPulleyHeight(32,15);
 
@@ -594,6 +598,37 @@ dh3215 = HtdPulleyHeight(32,15);
         mirror([0,0,1])
         connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
           7,pitchDiameter1,flange,tubeAdj,bearingAdj,-firstAngle,(w+12)/4);
+    }
+    else if (thisConnector == c2La)
+    {
+        w = HtdPulleyDiameter(16,9);
+        rotate([0,-90,0])
+        mirror([0,0,1])
+        connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
+          7,pitchDiameter1,flange,tubeAdj,bearingAdj,0,(w+12)/4);
+    }
+    else if (thisConnector == c2Lb)
+    {
+        w = HtdPulleyDiameter(16,9);
+        rotate([0,-90,0])
+        //mirror([0,0,1])
+        connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
+          7,pitchDiameter1,flange,tubeAdj,bearingAdj,0,(w+12)/4);
+    }
+    else if (thisConnector == c4La)
+    {
+        w = HtdPulleyDiameter(16,9);
+        rotate([0,-90,0])
+        mirror([0,0,1])
+        connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
+          7,pitchDiameter1,flange,tubeAdj,bearingAdj,-lastAngle,(w+12)/4);
+    }
+    else if (thisConnector == c4Lb)
+    {
+        w = HtdPulleyDiameter(16,9);
+        rotate([0,-90,0])
+        connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
+          7,pitchDiameter1,flange,tubeAdj,bearingAdj,-lastAngle,(w+12)/4);
     }
     else if (thisConnector == c1La)
     {
@@ -655,18 +690,19 @@ else if (display == onePulley)
     p0 = 1;
     p1Ua =2;
     p2L = 3;
+    p2U = 4;
     
     dAngle0 = atan(y1/(x1+tubeLength2+x2));
     twist0 = 90 - firstAngle + dAngle0;
     
-    thisPulley = p2L;
+    thisPulley = p2U;
     
+    bearingDiameterAdjust = 0.3; // First print at 12 gave a hole of 11.6mm
     if (thisPulley == p0)
     {
         teeth = 32;
         width = 15;
         h = HtdPulleyHeight(teeth,width);
-        bearingDiameterAdjust = 0.4; // First print at 12 gave a hole of 11.6mm
         echo(twist0);
         difference()
         {
@@ -684,7 +720,6 @@ else if (display == onePulley)
         teeth = 16;
         width = 15;
         h = HtdPulleyHeight(teeth,width);
-        bearingDiameterAdjust = 0.4; // First print at 12 gave a hole of 11.6mm
         echo(twist0);
         difference()
         {
@@ -697,12 +732,28 @@ else if (display == onePulley)
             cylinder(r=5.75,h=h);
         }
     }
+    else if (thisPulley == p2U)
+    {
+        teeth = 16;
+        width = 15;
+        h = HtdPulleyHeight(teeth,width);
+        echo(twist0);
+        difference()
+        {
+            translate([0,0,h/2])
+            HtdPulley(teeth,width,0,$fn=50);
+            translate([0,0,-0.5])
+            bearing(6,12+bearingDiameterAdjust,5);
+            translate([0,0,h-4.5])
+            bearing(6,12+bearingDiameterAdjust,5);
+            cylinder(r=5.75,h=h);
+        }
+    }
     else if (thisPulley == p1Ua)
     {
         teeth = 16;
         width = 9;
         h = HtdPulleyHeight(teeth,width);
-        bearingDiameterAdjust = 0.4; // First print at 12 gave a hole of 11.6mm
         difference()
         {
             translate([0,0,h/2])
@@ -719,7 +770,6 @@ else if (display == onePulley)
         teeth = 16;
         width = 9;
         h = HtdPulleyHeight(teeth,width);
-        bearingDiameterAdjust = 0.4; // First print at 12 gave a hole of 11.6mm
         difference()
         {
             translate([0,0,h/2])
