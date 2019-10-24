@@ -94,13 +94,26 @@ module connector(tubeOD,sheathWall,sheathLength,plateCenterX,plateCenterY,
     // The connector is oriented along the X axis, and drops below.
     // The origin is at the right center of the sheath.
 
+    rs = tubeOD/2+sheathWall; // sheath radius
+    
     difference()
     {
         union()
         {
             // Construct the sheath.
             rotate([0,-90,0])
-            cylinder(r=tubeOD/2+sheathWall,h=sheathLength);
+            cylinder(r=rs,h=sheathLength);
+            
+            // Construct the dome.
+            zc = (plateThickness*plateThickness-rs*rs)/(2*plateThickness); // This is negative.
+            intersection()
+            {
+                translate([zc,0,0])
+                sphere(r=plateThickness-zc);
+                translate([-sheathLength,0,0])
+                rotate([0,90,0])
+                cylinder(r=rs,h=2*sheathLength);
+            }
 
             // Construct the plate.
             rotate([90,0,0])
@@ -501,8 +514,8 @@ plateGap = 0.1*in;
 plateThickness = 4; // Matches the bearing.
 bearingOD = 6;
 bearingAdj = 0.1; // 0 too tight. 0.2 a tiny bit loose. (Rough settings.)
-tubeAdj = (printer==PRUSA) ? 0.09 : (printer==TAZ) ? 0.10 : 0.0; // 0.13 for TAZ/slic3r
-// 0.10 is a little loose for PRUSA/Simplify3D, but nice with slic3r.
+tubeAdj = (printer==PRUSA) ? 0.08 : (printer==TAZ) ? 0.10 : 0.0; // 0.13 for TAZ/slic3r
+// 0.09 is a little loose for PRUSA/Simplify3D, but nice with slic3r.
 
 // R1 = 13.190*in;  // 5mm HTD 150, 16 to 16 tooth
 R1 = 8.2687*in;  // 5mm HTD 100, 16 to 16 tooth
@@ -587,14 +600,14 @@ c4Lb = 6;
 c4La = 7;
 c2Lb = 8;
 
-thisConnector = c2Lb;
+thisConnector = c1Ua;
 
 dh3215 = HtdPulleyHeight(32,15);
 
     if (thisConnector == c1Ua)
     {
         w = HtdPulleyDiameter(16,9);
-        rotate([0,-90,0])
+        rotate([-90,0,0])
         mirror([0,0,1])
         connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
           7,pitchDiameter1,flange,tubeAdj,bearingAdj,-firstAngle,(w+12)/4);
@@ -632,7 +645,7 @@ dh3215 = HtdPulleyHeight(32,15);
     }
     else if (thisConnector == c1La)
     {
-        rotate([0,-90,0])
+        rotate([-90.0,0])
         difference()
         { 
             connector(tubeOd,sheathWall,sheathLength,x2,y2,plateThickness,plateGap,
