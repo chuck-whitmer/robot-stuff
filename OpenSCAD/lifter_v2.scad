@@ -105,7 +105,9 @@ module connector(tubeOD,sheathWall,sheathLength,plateCenterX,plateCenterY,
             cylinder(r=rs,h=sheathLength);
             
             // Construct the dome.
-            zc = (plateThickness*plateThickness-rs*rs)/(2*plateThickness); // This is negative.
+            zc = (plateCenterY != 0) ?            
+            (plateThickness*plateThickness-rs*rs)/(2*plateThickness) // This is negative.
+            : (plateThickness*plateThickness/4-rs*rs)/(plateThickness);
             intersection()
             {
                 translate([zc,0,0])
@@ -368,7 +370,7 @@ module ToolConnector(shift,plateThickness,rotation)
             linear_extrude(plateThickness)
             hull()
             {
-                circle(r=pd32/2);
+                circle(r=pd32/2-3);
                 translate([-shift,0])
                 circle(r=14);
             }
@@ -440,11 +442,12 @@ module ToolMount()
             }
         }
     }
-    plateThickness = pulleyFaceY-16;
-    translate([0,16+plateThickness/2,0])
-    ToolConnector(39,plateThickness,rotation);
-    translate([0,-16-plateThickness/2,0])
-    ToolConnector(39,plateThickness,rotation);
+    pt = pulleyFaceY-16;
+    echo("Tool mount plate thickness",pt);
+    translate([0,16+pt/2,0])
+    ToolConnector(39,pt,rotation);
+    translate([0,-16-pt/2,0])
+    ToolConnector(39,pt,rotation);
 }
 
 module RobotMount()
@@ -591,16 +594,21 @@ if (display == justOneConnector)
 // upward to mesh with 3La and 3Lb, but linkage 1 is angled, and the pips on the connector
 // must be adjusted.    
 
-c1Ua = 1;    
-c0a = 2;
-c0b = 3;
-c1La = 4;
-c2La = 5;
-c4Lb = 6;
-c4La = 7;
-c2Lb = 8;
+c0a = 1;
+c0b = 2;
+c1La = 3;
+c1Ua = 4;    
+c1Ub = 5;
+c2La = 6;
+c2Lb = 7;
+c4Lb = 8;
+c4La = 9;
+c4Ua = 10;
+c4Ub = 11; // Same as c4Ua
+c5a = 12;
+c5b = 13;
 
-thisConnector = c1Ua;
+thisConnector = c5a;
 
 dh3215 = HtdPulleyHeight(32,15);
 
@@ -612,10 +620,17 @@ dh3215 = HtdPulleyHeight(32,15);
         connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
           7,pitchDiameter1,flange,tubeAdj,bearingAdj,-firstAngle,(w+12)/4);
     }
+    if (thisConnector == c1Ub)
+    {
+        w = HtdPulleyDiameter(16,9);
+        rotate([-90,0,0])
+        connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
+          7,pitchDiameter1,flange,tubeAdj,bearingAdj,-firstAngle,(w+12)/4);
+    }
     else if (thisConnector == c2La)
     {
         w = HtdPulleyDiameter(16,9);
-        rotate([0,-90,0])
+        rotate([-90,0,0])
         mirror([0,0,1])
         connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
           7,pitchDiameter1,flange,tubeAdj,bearingAdj,0,(w+12)/4);
@@ -623,15 +638,14 @@ dh3215 = HtdPulleyHeight(32,15);
     else if (thisConnector == c2Lb)
     {
         w = HtdPulleyDiameter(16,9);
-        rotate([0,-90,0])
-        //mirror([0,0,1])
+        rotate([-90,0,0])
         connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
           7,pitchDiameter1,flange,tubeAdj,bearingAdj,0,(w+12)/4);
     }
     else if (thisConnector == c4La)
     {
         w = HtdPulleyDiameter(16,9);
-        rotate([0,-90,0])
+        rotate([-90,0,0])
         mirror([0,0,1])
         connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
           7,pitchDiameter1,flange,tubeAdj,bearingAdj,-lastAngle,(w+12)/4);
@@ -639,9 +653,16 @@ dh3215 = HtdPulleyHeight(32,15);
     else if (thisConnector == c4Lb)
     {
         w = HtdPulleyDiameter(16,9);
-        rotate([0,-90,0])
+        rotate([-90,0,0])
         connector(tubeOd,sheathWall,sheathLength,x1,y1,plateThickness,plateGap,
           7,pitchDiameter1,flange,tubeAdj,bearingAdj,-lastAngle,(w+12)/4);
+    }
+    else if (thisConnector == c4Ua || thisConnector == c4Ub)
+    {
+        w = HtdPulleyDiameter(16,9);
+        rotate([-90,0,0])
+        connector(tubeOd,sheathWall,sheathLength,x2,0,plateThickness,plateGap,
+          7,pitchDiameter1,flange,tubeAdj,bearingAdj,180,(w+12)/4);
     }
     else if (thisConnector == c1La)
     {
@@ -675,6 +696,16 @@ dh3215 = HtdPulleyHeight(32,15);
         rotate([-90,0,0])
         ToolConnector(39,plateThickness,-90);
     }
+    else if (thisConnector == c5a)
+    {
+        dy = plateMountDy(plateThickness,plateGap);
+        dh = HtdPulleyHeight(16,9);
+        pulleyFaceY = tubeOffset/2+dy;
+        pt = pulleyFaceY - 16;
+        echo("pt",pt);
+        rotate([-90,0,0])
+        ToolConnector(39,pt,0);
+    }
 
 
 }
@@ -687,6 +718,10 @@ else if (display == tubeSpacer)
         cylinder(r=tubeOd/2+sheathWall,10);
         translate([0,0,-0.1])
         cylinder(r=tubeOd/2+tubeAdj,10.2);
+        translate([0,0,-10+tubeOd/2+1])
+        cylinder(r1=tubeOd,r2=0,h=tubeOd);
+        translate([0,0,10-tubeOd/2-1])
+        cylinder(r2=tubeOd,r1=0,h=tubeOd);
     }
     translate([tubeOffset/2,0,0])
     difference()
@@ -694,6 +729,10 @@ else if (display == tubeSpacer)
         cylinder(r=tubeOd/2+sheathWall,10);
         translate([0,0,-0.1])
         cylinder(r=tubeOd/2+tubeAdj,10.2);
+        translate([0,0,-10+tubeOd/2+1])
+        cylinder(r1=tubeOd,r2=0,h=tubeOd);
+        translate([0,0,10-tubeOd/2-1])
+        cylinder(r2=tubeOd,r1=0,h=tubeOd);
     }
     translate([-(tubeOffset-tubeOd-sheathWall)/2,-sheathWall/2,0])
     cube([tubeOffset-tubeOd-sheathWall,sheathWall,10]);
@@ -704,11 +743,14 @@ else if (display == onePulley)
     p1Ua =2;
     p2L = 3;
     p2U = 4;
+    p3Ua = 5;
+    p5a = 6;
     
     dAngle0 = atan(y1/(x1+tubeLength2+x2));
     twist0 = 90 - firstAngle + dAngle0;
+    twist5 = 90 + lastAngle - dAngle0;
     
-    thisPulley = p2U;
+    thisPulley = p3Ua;
     
     bearingDiameterAdjust = 0.3; // First print at 12 gave a hole of 11.6mm
     if (thisPulley == p0)
@@ -771,6 +813,38 @@ else if (display == onePulley)
         {
             translate([0,0,h/2])
             HtdPulley(teeth,width,0,$fn=50);
+            translate([0,0,-0.5])
+            bearing(6,12+bearingDiameterAdjust,5);
+            translate([0,0,h-4.5])
+            bearing(6,12+bearingDiameterAdjust,5);
+            cylinder(r=5.75,h=h);
+        }
+    }
+    else if (thisPulley == p3Ua)
+    {
+        teeth = 16;
+        width = 9;
+        h = HtdPulleyHeight(teeth,width);
+        difference()
+        {
+            translate([0,0,h/2])
+            HtdPulley(teeth,width,twist5,$fn=50);
+            translate([0,0,-0.5])
+            bearing(6,12+bearingDiameterAdjust,5);
+            translate([0,0,h-4.5])
+            bearing(6,12+bearingDiameterAdjust,5);
+            cylinder(r=5.75,h=h);
+        }
+    }
+    else if (thisPulley == p5a)
+    {
+        teeth = 32;
+        width = 9;
+        h = HtdPulleyHeight(teeth,width);
+        difference()
+        {
+            translate([0,0,h/2])
+            HtdPulley(teeth,width,twist5,$fn=50);
             translate([0,0,-0.5])
             bearing(6,12+bearingDiameterAdjust,5);
             translate([0,0,h-4.5])
