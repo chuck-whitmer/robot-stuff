@@ -357,22 +357,58 @@ module TopInnerSet()
     HtdPulley(16,15,0);    
 }
 
+// hexagon - A 2D hexagon with flat to flat diameter w. Flats are parallel to x axis.
+module hexagon(w)
+{
+    s = w/sqrt(3);
+    polygon([[-s/2,w/2],[s/2,w/2],[s,0],[s/2,-w/2],[-s/2,-w/2],[-s,0]]);
+}
+
+lockNutHexFlat = 7.94 + 0.41;  // Flat to flat diameter for 5/16" nut = 7.94 mm.
+                        // On Prusa this came out as a 7.5 opening.
+lockNutHeight = 4.6;                 
+
 module ToolConnector(shift,plateThickness,rotation)
 {
     pd32 = HtdPulleyDiameter(32,9);
     pipOffset = (pd32+12)/4;
-    echo(bearingOD);
+    echo(rotation);
     rotate([90,0,0])
     {
         difference()
         {  
             translate([0,0,-plateThickness/2])
-            linear_extrude(plateThickness)
-            hull()
             {
-                circle(r=pd32/2-3);
-                translate([-shift,0])
-                circle(r=14);
+                union()
+                {
+                    linear_extrude(plateThickness)
+                    hull()
+                    {
+                        circle(r=pd32/2-3);
+                        translate([-shift,0])
+                        {
+                            
+                            circle(r=14);
+                        }
+                    }
+                    if (abs(rotation)==90)
+                    {
+                        linear_extrude(plateThickness+3)
+                        translate([-shift,0])
+                        {
+                            difference()
+                            {
+                                translate([-2,0])
+                                offset(4)
+                                square([16,20],center=true);
+                                translate([0,8])
+                                hexagon(lockNutHexFlat);
+                                translate([0,-8])
+                                hexagon(lockNutHexFlat);
+                            }
+                        }
+                    }
+                }
             }
             translate([-shift,0,0])
             holes(4);
