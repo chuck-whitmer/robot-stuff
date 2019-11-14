@@ -598,15 +598,59 @@ onePulley = 2;
 bottomLink = 3;
 tetrixTest = 4;
 tubeSpacer = 5;
+tensioner = 6;
+axleHolder = 7;
 
 //display = bottomLink;
 //display = theWholeStack;
 //display = tetrixTest;
 //display = onePulley;
-display = justOneConnector;
+//display = justOneConnector;
 //display = tubeSpacer;
+//display = tensioner;
+display = axleHolder;
 
-if (display == justOneConnector)
+if (display == axleHolder)
+{
+    thickness = 4.5;
+        rotate([90,0,0])
+    {
+        rotate([90,0,0])
+        translate([0,0,-thickness/2])
+        difference()
+        {
+            linear_extrude(thickness)
+            {
+                translate([0,23]) // 23 being 39-16, where 39 is the offset of the Robot Connector.
+                circle(r=14);
+                translate([-14,0])
+                square([28,23]);
+            }
+            bearingDiameterAdjust = 0.3; // First print at 12 gave a hole of 11.6mm
+            translate([0,23,-0.2])
+            {
+                bearing(6,12+bearingDiameterAdjust,thickness+0.4);
+                cylinder(r=4,h=thickness+0.4);
+            }
+        }
+        difference()
+        {
+            linear_extrude(thickness)
+            offset(2)
+            square(24,center=true);
+            littleHoles(2);
+        }
+    }
+}
+else if (display == tensioner)
+{
+    //tube(tubeId,tubeOd,1*in);
+    h1 = 2.0;
+    r1 = (2/3*tubeOd+1/3*tubeId)/2;
+    cylinder(r=r1,h=h1);
+    cylinder(r=r1/3,h=sheathLength/2);
+}
+else if (display == justOneConnector)
 {
 //Pulley Alignment
 //It is essential that if we want the starting linkages to have the angles we
@@ -644,7 +688,7 @@ c4Ub = 11; // Same as c4Ua
 c5a = 12;
 c5b = 13;
 
-thisConnector = c5a;
+thisConnector = c0b;
 
 dh3215 = HtdPulleyHeight(32,15);
 
