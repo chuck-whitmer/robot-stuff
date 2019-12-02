@@ -14,6 +14,8 @@ module andyMarkGearBox(n)
     xFace = (0.945-0.680)*in;
     r632 = 0.107*in/2;
     mountDepth = 0.190*in;
+    xRearFace = -sx+xFace;
+    // The box
     color("orange")
     difference()
     {
@@ -28,11 +30,54 @@ module andyMarkGearBox(n)
         translate([-16,-16,-0.1])
         cylinder(r=r632,h=mountDepth);
     }
+    // The face mount cylinder
+    hFaceMount = (0.680-0.315)*in;
+    rM3 = 0.098*in/2;
     color("silver")
     translate([xFace,0,sz/2])
     rotate([0,90,0])
-    cylinder(r=1.360*in/2,h=(0.680-0.315)*in);
-    
+    difference()
+    {
+        cylinder(r=1.360*in/2,h=hFaceMount);
+        for (i=[0:3])
+            rotate([0,0,90*i+45])
+            translate([14,0,hFaceMount-0.25*in+0.1])
+            cylinder(r=rM3,h=0.250*in);
+    }
+    xFaceMount = xFace + hFaceMount;
+    // The nub
+    color("silver")
+    translate([xFaceMount+1,0,sz/2])
+    rotate([0,90,0])
+    difference()
+    {
+        union()
+        {
+            linear_extrude(7)
+            intersection()
+            {
+                square(0.75*in,center=true);
+                circle(r=0.840*in/2);
+            }
+            cylinder(r=4,h=10);
+        }
+        for (i=[0:3])
+            rotate([0,0,90*i+45])
+            translate([8,0,0])
+            cylinder(r=r632,h=8);
+        cylinder(r=3,h=11);
+    }
+    // The motor
+    // 57 18 37.5
+    translate([xRearFace,0,sz/2])
+    rotate([0,-90,0])
+    {
+        color("silver")
+        cylinder(r=37.5/2,h=57);
+        color("black")
+        translate([0,0,57])
+        cylinder(r=37.5/2,h=18);
+    }
     
 }
 
@@ -323,8 +368,8 @@ motor = 10;
 //display = justOneConnector;
 //display = axleHolder;
 //display = wormGear;
-//display = assembly;
-display = motor;
+display = assembly;
+//display = motor;
 
 if (display == axleHolder)
 {
@@ -400,9 +445,20 @@ else if (display == assembly)
 //    rotate([-90,0,90])
 //    axleHolder();
 
-    translate([-64+8,0,39])
+    translate([-64,0,39])
     rotate([0,90,0])
-    wormGearAssembly();
-
+    {
+        wormGearAssembly();
+        translate([7-2.5*32+8,24,0])
+        rotate([90,0,0])
+        translate([0,0,-0.75*in])
+        andyMarkGearBox(1);
+    }
+    translate([-3.5*32,32,32+16])
+    rotate([0,90,0])
+    TetrixChannel(5*32);
+    translate([-2.5*32,64,3.5*32])
+    rotate([90,0,0])
+    TetrixChannel(3*32);
 
 }
