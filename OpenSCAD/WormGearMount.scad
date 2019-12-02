@@ -4,6 +4,38 @@ $fn = 50;
 use <TimingBeltPulley.scad>
 use <tetrix_holes.scad>
 
+module andyMarkGearBox(n)
+{
+    assert(n==1,"Multiple stage boxes not implemented");
+    
+    sx = (1.840-0.680)*in;
+    sy = 1.5*in;
+    sz = 1.5*in;
+    xFace = (0.945-0.680)*in;
+    r632 = 0.107*in/2;
+    mountDepth = 0.190*in;
+    color("orange")
+    difference()
+    {
+        translate([-sx+xFace,-sy/2,0])
+        cube([sx,1.5*in,1.5*in]);
+        translate([0,16,-0.1])
+        cylinder(r=r632,h=mountDepth);
+        translate([0,-16,-0.1])
+        cylinder(r=r632,h=mountDepth);
+        translate([-16,16,-0.1])
+        cylinder(r=r632,h=mountDepth);
+        translate([-16,-16,-0.1])
+        cylinder(r=r632,h=mountDepth);
+    }
+    color("silver")
+    translate([xFace,0,sz/2])
+    rotate([0,90,0])
+    cylinder(r=1.360*in/2,h=(0.680-0.315)*in);
+    
+    
+}
+
 module goBildaWormGear()
 {
     ss = 16*sqrt(2)/2; // Screw circle radius. This is 11.31 not 12!
@@ -285,16 +317,22 @@ tetrixTest = 4;
 axleHolder = 7;
 wormGear = 8;
 assembly = 9;
+motor = 10;
 
 //display = tetrixTest;
 //display = justOneConnector;
 //display = axleHolder;
 //display = wormGear;
-display = assembly;
+//display = assembly;
+display = motor;
 
 if (display == axleHolder)
 {
     axleHolder();
+}
+else if (display == motor)
+{
+    andyMarkGearBox(1);
 }
 else if (display == wormGear)
 {
