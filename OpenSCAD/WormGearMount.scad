@@ -309,36 +309,149 @@ module axleHolder()
 {
     color("DarkTurquoise")
     {
-    thickness = 4.5;
+        thickness = 4.5;
         rotate([90,0,0])
-    {
-        rotate([90,0,0])
-        translate([0,0,-thickness/2])
-        difference()
         {
-            linear_extrude(thickness)
+            rotate([90,0,0])
+            translate([0,0,-thickness/2])
+            difference()
             {
-                translate([0,23]) // 23 being 39-16, where 39 is the offset of the Robot Connector.
-                circle(r=14);
-                translate([-14,0])
-                square([28,23]);
+                linear_extrude(thickness)
+                {
+                    translate([0,23]) // 23 being 39-16, where 39 
+                                      // is the offset of the Robot Connector.
+                    circle(r=14);
+                    translate([-14,0])
+                    square([28,23]);
+                }
+                bearingDiameterAdjust = 0.3; // First print at 12 gave a hole of 11.6mm
+                translate([0,23,-0.2])
+                {
+                    bearing(6,12+bearingDiameterAdjust,thickness+0.4);
+                    cylinder(r=4,h=thickness+0.4);
+                }
             }
-            bearingDiameterAdjust = 0.3; // First print at 12 gave a hole of 11.6mm
-            translate([0,23,-0.2])
+            difference()
             {
-                bearing(6,12+bearingDiameterAdjust,thickness+0.4);
-                cylinder(r=4,h=thickness+0.4);
+                linear_extrude(thickness)
+                offset(2)
+                square(24,center=true);
+                littleHoles(2);
             }
-        }
-        difference()
-        {
-            linear_extrude(thickness)
-            offset(2)
-            square(24,center=true);
-            littleHoles(2);
         }
     }
 }
+
+// Outside of the worm gear
+module axleHolder2()
+{
+    color("DarkTurquoise")
+    {
+        thickness = 4.5;
+        leftOffset = 18;
+        rotate([90,0,0])
+        {
+            rotate([90,0,0])
+            translate([0,0,-thickness/2+leftOffset])
+            difference()
+            {
+                linear_extrude(thickness)
+                {
+                    translate([0,23]) // 23 being 39-16, where 39 
+                                      // is the offset of the Robot Connector.
+                    circle(r=14);
+                    translate([-14,0])
+                    square([28,23]);
+                }
+                bearingDiameterAdjust = 0.3; // First print at 12 gave a hole of 11.6mm
+                translate([0,23,-0.2])
+                {
+                    bearing(6,12+bearingDiameterAdjust,thickness+0.4);
+                    cylinder(r=4,h=thickness+0.4);
+                }
+            }
+            rotate([90,0,0])
+            translate([0,0,-thickness/2])
+            difference()
+            {
+                linear_extrude(thickness)
+                {
+                    translate([0,23]) // 23 being 39-16, where 39 
+                                      // is the offset of the Robot Connector.
+                    circle(r=14);
+                    translate([-14,0])
+                    square([28,23]);
+                }
+                bearingDiameterAdjust = 0.3; // First print at 12 gave a hole of 11.6mm
+                translate([0,23,-0.2])
+                {
+                    bearing(6,12+bearingDiameterAdjust,thickness+0.4);
+                    cylinder(r=4,h=thickness+0.4);
+                }
+            }
+            difference()
+            {
+                padLen = 34;
+                linear_extrude(thickness)
+                offset(2)
+                translate([-12,12-padLen])
+                square([24,padLen]);
+                littleHoles(2);
+            }
+        }
+    }
+}
+
+// Below the worm screw
+module axleHolder3()
+{
+    color("DarkTurquoise")
+    {
+        thickness = 4.5;
+        bearingOffset = 8;  // 24 worm gear offset, less 16 for center
+        bearingDiameterAdjust = 0.3; 
+        rotate([90,0,0])
+        {
+            difference()
+            {
+                union()
+                {
+                    rotate([90,0,0])
+                    translate([0,0,-thickness/2+12])
+                    linear_extrude(thickness)
+                    {
+                        intersection()
+                        {
+                            translate([0,bearingOffset])
+                            circle(r=14);
+                            translate([-14,0])
+                            square([28,28]);
+                        }
+                        translate([-14,0])
+                        square([28,bearingOffset]);
+                    }
+                    difference()
+                    {
+                        linear_extrude(thickness)
+                        offset(2)
+                        translate([-12,-14])
+                        square([24,26]);
+                        littleHoles(1);
+                        rotate(90)
+                        littleHoles(2);
+                    }
+                }
+                translate([0,-16.1,bearingOffset])
+                {
+                    rotate([-90,0,0])
+                    {
+                    bearing(6,12+bearingDiameterAdjust,thickness+2);
+                    cylinder(r=4,h=thickness+2);
+                    }
+                }                
+            }
+        }
+    }
 }
 
 
@@ -360,6 +473,8 @@ tubeAdj = (printer==PRUSA) ? 0.08 : (printer==TAZ) ? 0.10 : 0.0; // 0.13 for TAZ
 justOneConnector = 0;
 tetrixTest = 4;
 axleHolder = 7;
+axleHolder2 = 11;
+axleHolder3 = 12;
 wormGear = 8;
 assembly = 9;
 motor = 10;
@@ -367,6 +482,8 @@ motor = 10;
 //display = tetrixTest;
 //display = justOneConnector;
 //display = axleHolder;
+//display = axleHolder2;
+//display = axleHolder3;
 //display = wormGear;
 display = assembly;
 //display = motor;
@@ -374,6 +491,14 @@ display = assembly;
 if (display == axleHolder)
 {
     axleHolder();
+}
+else if (display == axleHolder2)
+{
+    axleHolder2();
+}
+else if (display == axleHolder3)
+{
+    axleHolder3();
 }
 else if (display == motor)
 {
@@ -434,16 +559,25 @@ else if (display == assembly)
     translate([39,-plateThickness/2,0])
         ToolConnector(39,plateThickness,-90);
     
-    translate([-50+32,0,39])
-    axle(6,100);
+    axleLen = 135;
+    translate([-axleLen/2+32,0,39])
+    axle(6,axleLen);
+    
+    translate([-64,24,37])
+    rotate([0,90,0])
+    axle(6,80);
 
     translate([-32,0,16])
     rotate([-90,0,90])
     axleHolder();
 
-//    translate([-64,0,16])
-//    rotate([-90,0,90])
-//    axleHolder();
+    translate([-3*32,0,16])
+    rotate([-90,0,90])
+    axleHolder2();
+    
+    translate([-64,16,0])
+    rotate([180,0,0])
+    axleHolder3();
 
     translate([-64,0,39])
     rotate([0,90,0])
