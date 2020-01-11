@@ -605,10 +605,10 @@ axleHolder = 7;
 //display = theWholeStack;
 //display = tetrixTest;
 //display = onePulley;
-//display = justOneConnector;
+display = justOneConnector;
 //display = tubeSpacer;
 //display = tensioner;
-display = axleHolder;
+//display = axleHolder;
 
 if (display == axleHolder)
 {
@@ -688,7 +688,7 @@ c4Ub = 11; // Same as c4Ua
 c5a = 12;
 c5b = 13;
 
-thisConnector = c0b;
+thisConnector = c1La;
 
 dh3215 = HtdPulleyHeight(32,15);
 
@@ -749,8 +749,16 @@ dh3215 = HtdPulleyHeight(32,15);
         rotate([-90.0,0])
         difference()
         { 
-            connector(tubeOd,sheathWall,sheathLength,x2,y2,plateThickness,plateGap,
-              bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj,0,0);
+            union()
+            {
+                connector(tubeOd,sheathWall,sheathLength,x2,y2,plateThickness,plateGap,
+                  bearingOD,pitchDiameter1,flange,tubeAdj,bearingAdj,0,0);
+                xx = 22;
+                yy = 4;
+                zz = 10.5;
+                translate([-xx/2,-tubeOd/2-tubeAdj-yy,-zz/2])
+                cube([xx,yy,zz]);
+            }
             translate([x2,0,0])
             rotate([90,0,0])
             {
@@ -762,7 +770,7 @@ dh3215 = HtdPulleyHeight(32,15);
                     cylinder(r=2,h=20);
                 }
             }        
-        }
+        }       
     }
     else if (thisConnector == c0a)
     {
