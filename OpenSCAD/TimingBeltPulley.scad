@@ -127,7 +127,7 @@ module HtdPulley(nTeeth,beltWidth,pipRotation)
     }
 }
 
-module HtdSimplePulley(nTeeth,beltWidth)
+module HtdSimplePulley(nTeeth,beltWidth,$fn=40)
 {
     // This is specific to the HTD 5mm belt.
     bigR = Htd5BigR;
@@ -213,5 +213,5 @@ module HtdSimplePulley(nTeeth,beltWidth)
     }
 }
 
-$fn=100;
-HtdSimplePulley(24,9);
+//$fn=100;
+HtdSimplePulley(24,9,$fn=100);
