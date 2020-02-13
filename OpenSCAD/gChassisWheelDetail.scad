@@ -29,22 +29,23 @@ module pulley24($fn=40)
 		union()
 		{
 			HtdSimplePulley(24,9,$fn);
-			translate([0,0,-21/2])
-			  cylinder(r=13/2,h=21);
+			translate([0,0,-25/2])
+			  cylinder(r=13/2+0.2,h=25);
 		}
+        scale(1.02)          // As demonstrated by printing PETG on Prusa.
 		GobildaRexShaft(80);
 	}
 }
 
 module wheelHub(insertDiameter,$fn=30)
 {
-    adj=0.99;
-    ir = insertDiameter/2*adj;
+    adj=1.02;
+    ir = insertDiameter/2/adj;
 	difference()
 	{
 		union()
 		{
-			cylinder(r=13/2,h=9);
+			cylinder(r=13/2+0.2,h=9);
 			cylinder(r=30,h=4);
 			translate([0,0,-5])
 			cylinder(r=ir,h=6);
@@ -62,6 +63,7 @@ module wheelHub(insertDiameter,$fn=30)
 			cylinder(r=2.5,h=10);
 		}
 		rotate([0,90,0])
+        scale(adj)
 		GobildaRexShaft(80);
 	}
 }
@@ -72,11 +74,11 @@ Hub1 = 3;
 Hub2 = 4;
 TestPiece = 5;
 
-toDraw = WholeAssembly;
+//toDraw = WholeAssembly;
 //toDraw = Pulley;
 //toDraw = TestPiece;
 //toDraw = Hub1;
-//toDraw = Hub2;
+toDraw = Hub2;
 
 if (toDraw == WholeAssembly)
 {
@@ -91,10 +93,10 @@ if (toDraw == WholeAssembly)
     {
         rotate([90,0,90])
         translate([0,0,6])
-        GobildaLowChannel(M,detail);
+        #GobildaLowChannel(M,detail);
         rotate([90,0,270])
         translate([0,0,6])
-        GobildaLowChannel(M,detail);
+        #GobildaLowChannel(M,detail);
     }
     
     // Wheel

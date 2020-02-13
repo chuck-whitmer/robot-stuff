@@ -14,32 +14,13 @@ module roller()
     rotate_extrude(angle=360,convexity=1)
     intersection()
     {
-        translate([r1-50,0])
-        scale([1,sqrt(2)])
-        circle(r=50);
+        translate([r1-R,0])
+        circle(R);
         translate([0,-a])
         square(2*a);
     }
 }
 
-//module roller()
-//{
-//    $fn = 200;
-//    R = 91.4; 
-//    r1 = rollerMaxRadius;
-//    a = 47/2;
-//
-//    color("grey")
-//    rotate_extrude(angle=360,convexity=1)
-//    intersection()
-//    {
-//        translate([r1-R,0])
-//        circle(R);
-//        translate([0,-a])
-//        square(2*a);
-//    }
-//}
-//
 module bracketTab()
 {
     d1 = 10.648;
@@ -182,5 +163,5 @@ module NexusMecanum()
     }
 }
 
-boundingCylinder(); // For debugging
+//boundingCylinder(); // For debugging
 NexusMecanum();

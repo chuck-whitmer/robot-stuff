@@ -20,6 +20,24 @@ module gbLittleHoles()
     }
 }
 
+module gbLittleHolesFlat()
+{
+    d1 = 12*sqrt(2)/2;
+    d2 = 16*sqrt(2)/2;
+    drillList = [
+      [8,8],[8,16],[8,32],[8,40],
+      [16,8],[16,16],[16,32],[16,40],
+      [24-d1,24+d1],[24-d1,24-d1],
+      [d1,24+d1],[d1,24-d1],
+      [12,24],[24-d2,24],[d2,24]
+    ];
+    for (i=drillList)
+    {
+        translate([i[0],i[1]])
+        circle(r=2);
+    }
+}
+
 module gbBigHoles(detail)
 {
     translate([24,24,-0.1])
@@ -41,6 +59,30 @@ module gbBigHoles(detail)
         cube([4,16-d2,5]);
         translate([22,24+d2,-0.1])
         cube([4,16-d2,5]);
+    }
+}
+
+module gbBigHolesFlat(detail)
+{
+    translate([24,24])
+    circle(r=7);
+    if (detail)
+    {
+        d1 = 12*sqrt(2)/2;
+        d2 = 16*sqrt(2)/2;
+        drillList = [
+          [24,40],[24,8],
+          [24,24+d2],[24,24-d2]
+        ];
+        for (i=drillList)
+        {
+            translate([i[0],i[1]])
+            circle(r=2);
+        }
+        translate([22,8])
+        square([4,16-d2]);
+        translate([22,24+d2])
+        square([4,16-d2]);
     }
 }
 
@@ -69,19 +111,63 @@ module gbPlate(nholes,detail)
     }
 }
 
+module gbPlateFromFlat(nholes,detail)
+{
+    length = 24*(nholes+1);
+    linear_extrude(2.5,convexity=10)
+    translate([-length/2,-24])
+    {
+        difference()
+        {
+            square([length,48]);
+            if (detail)
+            {
+                for (i=[0:nholes])
+                {
+                    translate([24*i,0])
+                    gbLittleHolesFlat();
+                }
+            }
+            for (i=[0:nholes-1])
+            {
+                translate([24*i,0])
+                gbBigHolesFlat(detail);
+            }
+        }
+    }
+}
+
 module GobildaChannel(nholes,detail=false)
 {
 	color(brightSilver)
 	{
 		translate([0,0,24-2.5])
-		gbPlate(nholes,detail);
+		gbPlateFromFlat(nholes,detail);
 		translate([0,24,0])
 		rotate([90,0,0])
-		gbPlate(nholes,detail);
+		gbPlateFromFlat(nholes,detail);
 		translate([0,-24,0])
 		rotate([-90,0,0])
-		gbPlate(nholes,detail);
+		gbPlateFromFlat(nholes,detail);
 	}
+}
+
+module gbLowSidePlate(nholes,detail)
+{
+    length = 24*(nholes+1);
+    linear_extrude(2.5,convexity=10)
+    difference()
+    {
+        square([length,12]);
+        if (detail)
+        {
+			for (i=[1:3*nholes+2])
+			{
+				translate([8*i,4])
+				circle(r=2);
+			}
+        }
+    }
 }
 
 module GobildaLowChannel(nholes,detail=false)
@@ -89,27 +175,15 @@ module GobildaLowChannel(nholes,detail=false)
 	color(brightSilver)
 	{
 		translate([0,0,6-2.5])
-		gbPlate(nholes,detail);
+		gbPlateFromFlat(nholes,detail);
 		length = 24*(nholes+1);
-		translate([-length/2,0,0])
-		difference()
-		{
-			union()
-			{
-				translate([0,-24,-6])
-				cube([length,2.5,12]);
-				translate([0,24-2.5,-6])
-				cube([length,2.5,12]);
-			}
-			if (detail)
-			for (i=[1:3*nholes+2])
-			{
-				translate([8*i,0,-2])
-				rotate([90,0,0])
-				translate([0,0,-25])
-				cylinder(r=2,h=50);
-			}
-		}
+        rotate([0,180,0])
+        translate([-length/2,-24,6])
+        rotate([-90,0,0])
+        gbLowSidePlate(nholes,detail);
+        translate([-length/2,24,-6])
+        rotate([90,0,0])
+        gbLowSidePlate(nholes,detail);
 	}
 }
 
@@ -175,10 +249,41 @@ module GobildaFaceThruHolePillowBlock()
 	}
 }
 
-//GobildaLowChannel(3);
-//GobildaChannel(3);
-//GobildaRexShaft(104);
-GobildaFaceThruHolePillowBlock();
+module patternPart()
+{
+    linear_extrude(6,convexity=4)
+    translate([0,24])
+    difference()
+    {
+        union()
+        {
+            translate([-16,-24])
+            square([32,24]);
+            circle(16);
+        }
+        circle(7);
+        r1 = 16/sqrt(2);
+        r2 = 12;
+        for (theta=[45:45:360])
+          translate(r1*[cos(theta),sin(theta)])
+            circle(2);
+        for (theta=[45:90:360])
+          translate(r2*[cos(theta),sin(theta)])
+            circle(2);
+    }
+}
 
+module GobildaCornerPatternMount($fn=20)
+{
+    patternPart();
+    rotate([-90,180,0])
+    patternPart();
+}
+
+//GobildaLowChannel(15,detail=true);
+//GobildaChannel(15,detail=true);
+//GobildaRexShaft(104);
+//GobildaFaceThruHolePillowBlock();
+GobildaCornerPatternMount();
 
 
