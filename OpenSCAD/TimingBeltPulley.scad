@@ -16,6 +16,32 @@ function HtdPulleyDiameter(nTeeth,beltWidth)
 function HtdPulleyPitchDiameter(nTeeth,beltWidth)
     = nTeeth*5/pi;
 
+module boundary2D(dd)
+{
+    difference()
+    {
+        offset(dd) children();
+        children();
+    }
+}
+
+module HtdTimingBelt(n1,x1,y1,n2,x2,y2,width)
+{
+    d1 = HtdPulleyPitchDiameter(n1,width);
+    d2 = HtdPulleyPitchDiameter(n2,width);
+    color([0.64,0.45,0.33])
+    translate([0,0,-width/2])
+    linear_extrude(width)
+    boundary2D(2)
+    hull()
+    {
+        translate([x1,y1])
+        circle(r=d1/2-1);
+        translate([x2,y2])
+        circle(r=d2/2-1);
+    }
+}
+
 module HtdPulley(nTeeth,beltWidth,pipRotation)
 {
     // This is specific to the HTD 5mm belt.

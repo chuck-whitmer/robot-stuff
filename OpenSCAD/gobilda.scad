@@ -139,16 +139,24 @@ module gbPlateFromFlat(nholes,detail)
 
 module GobildaChannel(nholes,detail=false)
 {
+    length = 24*(nholes+1);
 	color(brightSilver)
 	{
-		translate([0,0,24-2.5])
-		gbPlateFromFlat(nholes,detail);
-		translate([0,24,0])
-		rotate([90,0,0])
-		gbPlateFromFlat(nholes,detail);
-		translate([0,-24,0])
-		rotate([-90,0,0])
-		gbPlateFromFlat(nholes,detail);
+        intersection()
+        {
+            union()
+            {
+                translate([0,0,24-2.5])
+                gbPlateFromFlat(nholes,detail);
+                translate([0,24,0])
+                rotate([90,0,0])
+                gbPlateFromFlat(nholes,detail);
+                translate([0,-24,0])
+                rotate([-90,0,0])
+                gbPlateFromFlat(nholes,detail);
+            }
+            cube([length-0.3,47.7,47.7],center=true);
+        }
 	}
 }
 
@@ -172,18 +180,25 @@ module gbLowSidePlate(nholes,detail)
 
 module GobildaLowChannel(nholes,detail=false)
 {
+    length = 24*(nholes+1);
 	color(brightSilver)
 	{
-		translate([0,0,6-2.5])
-		gbPlateFromFlat(nholes,detail);
-		length = 24*(nholes+1);
-        rotate([0,180,0])
-        translate([-length/2,-24,6])
-        rotate([-90,0,0])
-        gbLowSidePlate(nholes,detail);
-        translate([-length/2,24,-6])
-        rotate([90,0,0])
-        gbLowSidePlate(nholes,detail);
+        intersection()
+        {
+            union()
+            {
+                translate([0,0,6-2.5])
+                gbPlateFromFlat(nholes,detail);
+                rotate([0,180,0])
+                translate([-length/2,-24,6])
+                rotate([-90,0,0])
+                gbLowSidePlate(nholes,detail);
+                translate([-length/2,24,-6])
+                rotate([90,0,0])
+                gbLowSidePlate(nholes,detail);
+            }
+            cube([length-0.3,47.7,11.7],center=true);
+        }
 	}
 }
 
@@ -280,10 +295,59 @@ module GobildaCornerPatternMount($fn=20)
     patternPart();
 }
 
-//GobildaLowChannel(15,detail=true);
-//GobildaChannel(15,detail=true);
+module GobildaDualBlockMount()
+{
+    rotate([180,0,0])
+    translate([0,-8.5,-12])
+    difference()
+    {
+        union()
+        {
+            translate([13,0,0])
+            cube([6,8.5,12]);
+            translate([-19,0,0])
+            cube([6,8.5,12]);
+            translate([-19,0,0])
+            cube([38,3,8]);
+        }
+        translate([16,3,6])
+        cylinder(r=2,h=6.1);
+        translate([-16,3,6])
+        cylinder(r=2,h=6.1);
+        translate([16,2.5,4])
+        rotate([-90,0,0])
+        cylinder(r=2,h=6.1);
+        translate([-16,2.5,4])
+        rotate([-90,0,0])
+        cylinder(r=2,h=6.1);
+        for (x=[-8,0,8])
+            translate([x,-0.1,4])
+        rotate([-90,0,0])
+        cylinder(r=2,h=6.1);
+    }
+}
+
+module GobildaMotor435()
+{
+    $fn=40;
+    rotate([0,-90,0])
+    {
+        color(0.4*[1,1,1])
+        {
+        cylinder(r=16,h=41.9);
+        translate([0,0,41.8])
+        cylinder(r=37.5/2,h=75);
+        }
+        color(0.9*[1,1,1])
+        translate([0,0,-24])
+        cylinder(r=3,h=24.1);
+    }
+}
+
+//GobildaLowChannel(5,detail=true);
+//GobildaChannel(5,detail=true);
 //GobildaRexShaft(104);
 //GobildaFaceThruHolePillowBlock();
-GobildaCornerPatternMount();
-
-
+//GobildaCornerPatternMount();
+//GobildaDualBlockMount();
+GoBildaMotor435();

@@ -71,13 +71,27 @@ module wheelHub(insertDiameter,$fn=30)
 module dualBlockShim()
 {
     linear_extrude(2.5,convexity=3)
+        translate([-19,0])
     difference()
     {
         square([38,12]);
-        translate([3,4])
+        translate([3,8])
         circle(2,$fn=40);
-        translate([35,4])
+        translate([35,8])
         circle(2,$fn=40);
+    }
+}
+
+module shimmedBlockMount()
+{
+    rotate([0,90,0])
+    {
+        translate([0,2.5,0])
+        GobildaDualBlockMount();
+        color(printedPartColor)
+        translate([0,2.5,0])
+        rotate([90,0,0])
+        dualBlockShim();
     }
 }
 
@@ -114,72 +128,141 @@ if (toDraw == wholeAssembly)
 {
 
 
-//#SizingBox();
+    //#SizingBox();
 
-//translate([0,0,90])
-//TetrixChannel(416);
+    //translate([0,0,90])
+    //TetrixChannel(416);
 
-// Low Channels
-translate([12+240/2,0,50])
-{
-    rotate([90,0,90])
-    translate([0,0,6])
-    GobildaLowChannel(15,detail);
-    rotate([90,0,270])
-    translate([0,0,6])
-    GobildaLowChannel(15,detail);
-}
-translate([-(12+240/2),0,50])
-{
-    rotate([90,0,90])
-    translate([0,0,6])
-    GobildaLowChannel(15,detail);
-    rotate([90,0,270])
-    translate([0,0,6])
-    GobildaLowChannel(15,detail);
-}
+    // Low Channels
+    translate([12+240/2,0,50])
+    {
+        rotate([90,0,90])
+        translate([0,0,6])
+        GobildaLowChannel(15,detail);  // star this one
+        rotate([90,0,270])
+        translate([0,0,6])
+        GobildaLowChannel(15,detail);
+    }
+    translate([-(12+240/2),0,50])
+    {
+        rotate([90,0,90])
+        translate([0,0,6])
+        GobildaLowChannel(15,detail);
+        rotate([90,0,270])
+        translate([0,0,6])
+        GobildaLowChannel(15,detail);
+    }
 
-// Wheels
-wheelOffsetX = 240/2+24+30+9;
-translate([wheelOffsetX,7*24,50])
-rotate([0,60,90])
-NexusMecanum();
-translate([wheelOffsetX,-7*24,50])
-rotate([0,0,90])
-mirror([1,0,0])
-NexusMecanum();
-translate([-wheelOffsetX,7*24,50])
-rotate([0,0,90])
-mirror([1,0,0])
-NexusMecanum();
-translate([-wheelOffsetX,-7*24,50])
-rotate([0,60,90])
-NexusMecanum();
+    // Wheels
+    wheelOffsetX = 240/2+24+30+9;
+    translate([wheelOffsetX,7*24,50])
+    rotate([0,60,90])
+    NexusMecanum();  // star this one
+    translate([wheelOffsetX,-7*24,50])
+    rotate([0,0,90])
+    mirror([1,0,0])
+    NexusMecanum();
+    translate([-wheelOffsetX,7*24,50])
+    rotate([0,0,90])
+    mirror([1,0,0])
+    NexusMecanum();
+    translate([-wheelOffsetX,-7*24,50])
+    rotate([0,60,90])
+    NexusMecanum();
 
-// Cross Beams
-translate([0,24,50])
-GobildaChannel(9,detail);
-translate([0,96,50])
-GobildaChannel(9,detail);
+    // Cross Beams
+    translate([0,24,50])
+    GobildaChannel(9,detail);
+    translate([0,96,50])
+    GobildaChannel(9,detail);
 
-// Axles
-translate([-5*24+6,-7*24,50])
-    axleAssembly();
-translate([-5*24+6,7*24,50])
-    axleAssembly();
-translate([5*24-6,7*24,50])
-rotate([0,180,0])
-    axleAssembly();
-translate([5*24-6,-7*24,50])
-rotate([0,180,0])
-    axleAssembly();
+    // Axles
+    translate([-5*24+6,-7*24,50])
+        axleAssembly();
+    translate([-5*24+6,7*24,50])
+        axleAssembly();
+    translate([5*24-6,7*24,50])
+    rotate([0,180,0])
+        axleAssembly();
+    translate([5*24-6,-7*24,50])
+    rotate([0,180,0])
+        axleAssembly();
     
-translate([-120,0,50])
-rotate([90,90,0])
-GobildaCornerPatternMount();    
-translate([120,0,50])
-rotate([90,-90,0])
-GobildaCornerPatternMount();    
+    // Corner Mounts
+    translate([-120,0,50])
+    rotate([90,90,0])
+    GobildaCornerPatternMount();    
+    translate([120,0,50])
+    rotate([90,-90,0])
+    GobildaCornerPatternMount();    
+    
+    // Block Mounts
+    translate([-120,48,50])
+    shimmedBlockMount();
+    translate([-120,48+72,50])
+    shimmedBlockMount();
+    translate([-120,72,50])
+    mirror([0,1,0])
+    shimmedBlockMount();
+    mirror([1,0,0])
+    {
+    translate([-120,48,50])
+    shimmedBlockMount();
+    translate([-120,48+72,50])
+    shimmedBlockMount();
+    translate([-120,72,50])
+    mirror([0,1,0])
+    shimmedBlockMount();
+    }
+    
+    // Motors
+    translate([120,24,50])
+    GobildaMotor435();
+    translate([120,96,50])
+    GobildaMotor435();
+    mirror([1,0,0])
+    {
+    translate([120,24,50])
+    GobildaMotor435();
+    translate([120,96,50])
+    GobildaMotor435();
+    }
+    
+    // Drive pullies
+    translate([132,24,50])
+    rotate([0,90,0])
+    HtdSimplePulley(16,9);
+    translate([132,96,50])
+    rotate([0,90,0])
+    HtdSimplePulley(16,9);
+    mirror([1,0,0])
+    {
+    translate([132,24,50])
+    rotate([0,90,0])
+    HtdSimplePulley(16,9);
+    translate([132,96,50])
+    rotate([0,90,0])
+    HtdSimplePulley(16,9);
+    }
+    
+    // Timing Belt
+    translate([132,0,50])
+    {
+    rotate([0,90,0])
+    HtdTimingBelt(24,0,-7*24,16,0,24,9);
+    rotate([0,90,0])
+    HtdTimingBelt(16,0,96,24,0,168,9);
+    }
+    mirror([1,0,0])
+    {
+    translate([132,0,50])
+    {
+    rotate([0,90,0])
+    HtdTimingBelt(24,0,-7*24,16,0,24,9);
+    rotate([0,90,0])
+    HtdTimingBelt(16,0,96,24,0,168,9);
+    }
+    }    
 }
 else if (toDraw == shim)
 {
