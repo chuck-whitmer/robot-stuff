@@ -1,10 +1,10 @@
 use <gobilda.scad>
 use <NexusMecanum.scad>
 use <TimingBeltPulley.scad>
-use <tetrix_holes.scad>
+use <Tetrix.scad>
 
 in = 25.4;
-detail = false;
+detail = true;
 turquoise = [0.25,0.9,0.95];
 redish = [0.9,0.3,0.2];
 printedPartColor = redish;
@@ -123,6 +123,7 @@ shim = 2;
 
 //toDraw = shim;
 toDraw = wholeAssembly;
+addOns = true;
 
 if (toDraw == wholeAssembly)
 {
@@ -138,10 +139,10 @@ if (toDraw == wholeAssembly)
     {
         rotate([90,0,90])
         translate([0,0,6])
-        GobildaLowChannel(15,detail);  // star this one
+        GobildaLowChannel(15,detail); // left outer
         rotate([90,0,270])
         translate([0,0,6])
-        GobildaLowChannel(15,detail);
+        GobildaLowChannel(15,detail);  // left inner
     }
     translate([-(12+240/2),0,50])
     {
@@ -157,18 +158,18 @@ if (toDraw == wholeAssembly)
     wheelOffsetX = 240/2+24+30+9;
     translate([wheelOffsetX,7*24,50])
     rotate([0,60,90])
-    NexusMecanum();  // star this one
+    NexusMecanum();  // left rear
     translate([wheelOffsetX,-7*24,50])
     rotate([0,0,90])
     mirror([1,0,0])
-    NexusMecanum();
+    NexusMecanum();  // left front
     translate([-wheelOffsetX,7*24,50])
     rotate([0,0,90])
     mirror([1,0,0])
-    NexusMecanum();
+    NexusMecanum();  // right rear
     translate([-wheelOffsetX,-7*24,50])
     rotate([0,60,90])
-    NexusMecanum();
+    NexusMecanum();  // right front
 
     // Cross Beams
     translate([0,24,50])
@@ -248,21 +249,51 @@ if (toDraw == wholeAssembly)
     // Timing Belt
     translate([132,0,50])
     {
-    rotate([0,90,0])
-    HtdTimingBelt(24,0,-7*24,16,0,24,9);
-    rotate([0,90,0])
-    HtdTimingBelt(16,0,96,24,0,168,9);
+		rotate([0,90,0])
+		HtdTimingBelt(24,0,-7*24,16,0,24,9);
+		rotate([0,90,0])
+		HtdTimingBelt(16,0,96,24,0,168,9);
     }
     mirror([1,0,0])
     {
-    translate([132,0,50])
-    {
-    rotate([0,90,0])
-    HtdTimingBelt(24,0,-7*24,16,0,24,9);
-    rotate([0,90,0])
-    HtdTimingBelt(16,0,96,24,0,168,9);
-    }
+		translate([132,0,50])
+		{
+			rotate([0,90,0])
+			HtdTimingBelt(24,0,-7*24,16,0,24,9);
+			rotate([0,90,0])
+			HtdTimingBelt(16,0,96,24,0,168,9);
+		}
     }    
+	if (addOns)
+	{
+		translate([48,6*24,68])
+		GobildaLowChannel(3,detail);
+//		translate([0,0,50+24+16])
+//		TetrixChannel(288,detail);
+//		translate([120+24+16,0,50+24+16])
+//		rotate([0,0,90])
+//		TetrixChannel(416,detail);
+		for (tx=[
+			/*[128,0,74],*/[128,128,74],[128,-128,74],
+			/*[-128,0,74],*/[-128,128,74],[-128,-128,74]])
+		translate(tx)
+		{
+			rotate([0,0,90])
+			TetrixInternalCConnector();
+			translate([0,0,48])
+			rotate([0,90,-90])
+			TetrixChannel(96,detail);
+		}
+		translate([128,0,186])
+		rotate([-90,0,90])
+		TetrixChannel(288,detail);
+		translate([-128,0,186])
+		rotate([90,0,90])
+		TetrixChannel(288,detail);
+		translate([0,4*32,186])
+		TetrixChannel(288-64,detail);
+	}
+	
 }
 else if (toDraw == shim)
 {

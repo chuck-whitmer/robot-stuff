@@ -2,24 +2,24 @@ $fn = 20;
 
 brightSilver=0.9*[1,1,1];
 
-module gbLittleHoles()
-{
-    d1 = 12*sqrt(2)/2;
-    d2 = 16*sqrt(2)/2;
-    drillList = [
-      [8,8],[8,16],[8,32],[8,40],
-      [16,8],[16,16],[16,32],[16,40],
-      [24-d1,24+d1],[24-d1,24-d1],
-      [d1,24+d1],[d1,24-d1],
-      [12,24],[24-d2,24],[d2,24]
-    ];
-    for (i=drillList)
-    {
-        translate([i[0],i[1],-0.1])
-        cylinder(r=2,h=5);
-    }
-}
-
+//module gbLittleHoles()
+//{
+//    d1 = 12*sqrt(2)/2;
+//    d2 = 16*sqrt(2)/2;
+//    drillList = [
+//      [8,8],[8,16],[8,32],[8,40],
+//      [16,8],[16,16],[16,32],[16,40],
+//      [24-d1,24+d1],[24-d1,24-d1],
+//      [d1,24+d1],[d1,24-d1],
+//      [12,24],[24-d2,24],[d2,24]
+//    ];
+//    for (i=drillList)
+//    {
+//        translate([i[0],i[1],-0.1])
+//        cylinder(r=2,h=5);
+//    }
+//}
+//
 module gbLittleHolesFlat()
 {
     d1 = 12*sqrt(2)/2;
@@ -38,30 +38,30 @@ module gbLittleHolesFlat()
     }
 }
 
-module gbBigHoles(detail)
-{
-    translate([24,24,-0.1])
-    cylinder(r=7,h=5);
-    if (detail)
-    {
-        d1 = 12*sqrt(2)/2;
-        d2 = 16*sqrt(2)/2;
-        drillList = [
-          [24,40],[24,8],
-          [24,24+d2],[24,24-d2]
-        ];
-        for (i=drillList)
-        {
-            translate([i[0],i[1],-0.1])
-            cylinder(r=2,h=5);
-        }
-        translate([22,8,-0.1])
-        cube([4,16-d2,5]);
-        translate([22,24+d2,-0.1])
-        cube([4,16-d2,5]);
-    }
-}
-
+//module gbBigHoles(detail)
+//{
+//    translate([24,24,-0.1])
+//    cylinder(r=7,h=5);
+//    if (detail)
+//    {
+//        d1 = 12*sqrt(2)/2;
+//        d2 = 16*sqrt(2)/2;
+//        drillList = [
+//          [24,40],[24,8],
+//          [24,24+d2],[24,24-d2]
+//        ];
+//        for (i=drillList)
+//        {
+//            translate([i[0],i[1],-0.1])
+//            cylinder(r=2,h=5);
+//        }
+//        translate([22,8,-0.1])
+//        cube([4,16-d2,5]);
+//        translate([22,24+d2,-0.1])
+//        cube([4,16-d2,5]);
+//    }
+//}
+//
 module gbBigHolesFlat(detail)
 {
     translate([24,24])
@@ -83,31 +83,6 @@ module gbBigHolesFlat(detail)
         square([4,16-d2]);
         translate([22,24+d2])
         square([4,16-d2]);
-    }
-}
-
-module gbPlate(nholes,detail)
-{
-    length = 24*(nholes+1);
-    translate([-length/2,-24,0])
-    {
-        difference()
-        {
-            cube([length,48,2.5]);
-            if (detail)
-            {
-                for (i=[0:nholes])
-                {
-                    translate([24*i,0,0])
-                    gbLittleHoles();
-                }
-            }
-            for (i=[0:nholes-1])
-            {
-                translate([24*i,0,0])
-                gbBigHoles(detail);
-            }
-        }
     }
 }
 
