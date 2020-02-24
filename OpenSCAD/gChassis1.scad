@@ -2,6 +2,7 @@ use <gobilda.scad>
 use <NexusMecanum.scad>
 use <TimingBeltPulley.scad>
 use <Tetrix.scad>
+use <Rev.scad>
 
 in = 25.4;
 detail = true;
@@ -129,7 +130,7 @@ if (toDraw == wholeAssembly)
 {
 
 
-    //#SizingBox();
+    #SizingBox();
 
     //translate([0,0,90])
     //TetrixChannel(416);
@@ -266,22 +267,43 @@ if (toDraw == wholeAssembly)
     }    
 	if (addOns)
 	{
-		translate([48,6*24,68])
-		GobildaLowChannel(3,detail);
-//		translate([0,0,50+24+16])
-//		TetrixChannel(288,detail);
-//		translate([120+24+16,0,50+24+16])
-//		rotate([0,0,90])
-//		TetrixChannel(416,detail);
-		for (tx=[
-			/*[128,0,74],*/[128,128,74],[128,-128,74],
-			/*[-128,0,74],*/[-128,128,74],[-128,-128,74]])
+//		translate([48,6*24,68])
+//		GobildaLowChannel(3,detail);
+		translate([0,136,66])
+		GobildaSquareBeam(29);
+		translate([-29*4,136,66])
+		rotate([0,-90,0])
+		GobildaSpacer(6,4);
+		translate([29*4,136,66])
+		rotate([0,90,0])
+		GobildaSpacer(6,4);
+		translate([16,136,70])
+		GobildaSpacer(6,4);
+		translate([16+88,136,70])
+		GobildaSpacer(6,4);
+		hubStandoff = 24;
+		translate([16,136,70+4+13])
+		GobildaSpacer(6,hubStandoff);
+		translate([16+88,136,70+4+13])
+		GobildaSpacer(6,hubStandoff);
+		translate([16,8,70+4+13])
+		GobildaSpacer(6,hubStandoff);
+		translate([16+88,8,70+4+13])
+		GobildaSpacer(6,hubStandoff);
+		for (tx=[[128,128,74],[128,-128,74]])
 		translate(tx)
 		{
-			rotate([0,0,90])
 			TetrixInternalCConnector();
 			translate([0,0,48])
-			rotate([0,90,-90])
+			rotate([0,90,180])
+			TetrixChannel(96,detail);
+		}
+		for (tx=[[-128,128,74],[-128,-128,74]])
+		translate(tx)
+		{
+			TetrixInternalCConnector();
+			translate([0,0,48])
+			rotate([0,90,0])
 			TetrixChannel(96,detail);
 		}
 		translate([128,0,186])
@@ -292,6 +314,13 @@ if (toDraw == wholeAssembly)
 		TetrixChannel(288,detail);
 		translate([0,4*32,186])
 		TetrixChannel(288-64,detail);
+		
+		translate([88/2+16,128/2+8,50+24])
+		rotate([0,0,90])
+		RevExpansionHub();
+		translate([88/2+16,128/2+8,50+24+hubStandoff+13])
+		rotate([0,0,90])
+		RevExpansionHub();
 	}
 	
 }
