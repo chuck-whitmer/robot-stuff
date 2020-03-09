@@ -41,7 +41,7 @@ module pulley24($fn=40)
 module wheelHub(insertDiameter,$fn=30)
 {
     adj=1.02;
-    ir = insertDiameter/2/adj;
+    ir = insertDiameter/2;
 	difference()
 	{
 		union()
@@ -121,9 +121,11 @@ module axleAssembly()
 
 wholeAssembly = 1;
 shim = 2;
+wheelHubOnly = 3;
 
 //toDraw = shim;
-toDraw = wholeAssembly;
+//toDraw = wholeAssembly;
+toDraw = wheelHubOnly;
 addOns = true;
 
 if (toDraw == wholeAssembly)
@@ -327,4 +329,8 @@ if (toDraw == wholeAssembly)
 else if (toDraw == shim)
 {
     dualBlockShim();
+}
+else if (toDraw == wheelHubOnly)
+{
+    wheelHub(21.8,$fn=60);
 }
