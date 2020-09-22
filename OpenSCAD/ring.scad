@@ -13,6 +13,7 @@ r2=3/16*in;
 x2=(2.5-3/16)*in;
 y2=3/8*in-r2;
 
+color("orange")
 rotate_extrude(angle=360)
 hull()
 {
