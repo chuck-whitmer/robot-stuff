@@ -2,24 +2,6 @@ $fn = 20;
 
 brightSilver=0.9*[1,1,1];
 
-//module gbLittleHoles()
-//{
-//    d1 = 12*sqrt(2)/2;
-//    d2 = 16*sqrt(2)/2;
-//    drillList = [
-//      [8,8],[8,16],[8,32],[8,40],
-//      [16,8],[16,16],[16,32],[16,40],
-//      [24-d1,24+d1],[24-d1,24-d1],
-//      [d1,24+d1],[d1,24-d1],
-//      [12,24],[24-d2,24],[d2,24]
-//    ];
-//    for (i=drillList)
-//    {
-//        translate([i[0],i[1],-0.1])
-//        cylinder(r=2,h=5);
-//    }
-//}
-//
 module gbLittleHolesFlat()
 {
     d1 = 12*sqrt(2)/2;
@@ -38,30 +20,6 @@ module gbLittleHolesFlat()
     }
 }
 
-//module gbBigHoles(detail)
-//{
-//    translate([24,24,-0.1])
-//    cylinder(r=7,h=5);
-//    if (detail)
-//    {
-//        d1 = 12*sqrt(2)/2;
-//        d2 = 16*sqrt(2)/2;
-//        drillList = [
-//          [24,40],[24,8],
-//          [24,24+d2],[24,24-d2]
-//        ];
-//        for (i=drillList)
-//        {
-//            translate([i[0],i[1],-0.1])
-//            cylinder(r=2,h=5);
-//        }
-//        translate([22,8,-0.1])
-//        cube([4,16-d2,5]);
-//        translate([22,24+d2,-0.1])
-//        cube([4,16-d2,5]);
-//    }
-//}
-//
 module gbBigHolesFlat(detail)
 {
     translate([24,24])
@@ -319,10 +277,58 @@ module GobildaMotor435()
     }
 }
 
+module gbFlatBeam(nholes,h)
+{
+	length = nholes*8;
+	linear_extrude(h,convexity=10)
+	difference()
+	{
+		square([length,8]);
+		for (i=[4:8:length])
+			translate([i,4]) circle(2);
+	}
+}
+
+module GobildaSquareBeam(nholes)
+{
+	difference()
+	{
+		translate([-nholes*4,-4,-4])
+		intersection()
+		{
+			translate([0,0,-1])
+			gbFlatBeam(nholes,10);
+			rotate([90,0,0])
+			translate([0,0,-9])	
+			gbFlatBeam(nholes,10);
+		}
+		rotate([0,90,0])
+		translate([0,0,nholes*4-10])
+		cylinder(r=2,h=11);
+		rotate([0,-90,0])
+		translate([0,0,nholes*4-10])
+		cylinder(r=2,h=11);
+	}
+}
+
+module GobildaSpacer(od,length)
+{
+	id = (od==8) ? 6 : 4;
+	color(brightSilver)
+	linear_extrude(length,convexity=2)
+	difference()
+	{
+		circle(od/2);
+		circle(id/2);
+	}
+}
+
 //GobildaLowChannel(5,detail=true);
 //GobildaChannel(5,detail=true);
 //GobildaRexShaft(104);
 //GobildaFaceThruHolePillowBlock();
 //GobildaCornerPatternMount();
 //GobildaDualBlockMount();
-GoBildaMotor435();
+//GoBildaMotor435();
+//GobildaSquareBeam(10);
+GobildaSpacer(6,10);
