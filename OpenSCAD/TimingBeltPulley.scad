@@ -240,4 +240,4 @@ module HtdSimplePulley(nTeeth,beltWidth,$fn=40)
 }
 
 //$fn=100;
-HtdSimplePulley(24,9,$fn=100);
+HtdSimplePulley(29,6,$fn=100);
